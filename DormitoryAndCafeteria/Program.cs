@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using DormitoryAndCafeteriaSystem;
+using System.Text;
+
 
 namespace DormitoryAndCafeteriaSystem
 {
     class Program
     {
-        static List<Student> students = new();
+        
+        
+            static List<Student> students = new();
         static CafeteriaSystem cafeteria = new();
 
         static void Main()
         {
+            // Set console encoding to UTF-8 to support special characters like 
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.InputEncoding = Encoding.UTF8;
+
             LoadAllStudents();
 
             while (true)
@@ -195,5 +202,7 @@ namespace DormitoryAndCafeteriaSystem
             foreach (var s in students) s.SaveToFile($"student_{s.Id}.json");
             cafeteria.SaveAllOrders();
         }
+        
+
     }
 }

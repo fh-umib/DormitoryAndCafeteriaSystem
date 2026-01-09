@@ -18,18 +18,19 @@ namespace DormitoryAndCafeteriaSystem
              // default monthly fee
         }
 
-        public decimal CalculateMonthlyCost()
+        public override decimal CalculateMonthlyCost()
         {
-            return MonthlyFee;
+            return 150;
         }
 
-       
-            public override string ToString()
+
+
+        public override string ToString()
         {
             return $"{Id} | {Name} {Lastname} | {Dormitory}";
         }
 
-        
+
 
         // ---------------- JSON METHODS ----------------
 
@@ -37,7 +38,11 @@ namespace DormitoryAndCafeteriaSystem
         {
             string json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(filename, json);
+
+            // Kjo tregon ne console ku u ruajt file
+            Console.WriteLine($"Student data saved to: {Path.GetFullPath(filename)}");
         }
+
 
         public static Student? LoadFromFile(string filename)
         {

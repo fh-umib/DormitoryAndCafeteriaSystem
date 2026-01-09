@@ -7,18 +7,12 @@ using System.Threading.Tasks;
 namespace DormitoryAndCafeteriaSystem
 {
     public class Staff : Person
-    {
-        public Staff(int id, string name)
-            : base(id, name) { }
+{
+    public Staff(int id, string name) : base(id, name) { }
 
-        public override decimal CalculateMonthlyCost()
-        {
-            return 0; // stafi nuk paguan
-        }
+    public override decimal CalculateMonthlyCost() => 0;
 
-        public override string GetInfo()
-        {
-            return base.GetInfo() + " | Staff";
-        }
-    }
+    public override string GetInfo() => base.GetInfo() + " | Staff";
+}
+
 }

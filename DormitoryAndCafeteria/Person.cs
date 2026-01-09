@@ -5,7 +5,9 @@ namespace DormitoryAndCafeteriaSystem
     public class Person
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+
+        public Person() { }
 
         public Person(int id, string name)
         {
@@ -13,15 +15,12 @@ namespace DormitoryAndCafeteriaSystem
             Name = name;
         }
 
-        public virtual string GetInfo()
-        {
-            return $"ID: {Id} | Name: {Name}";
-        }
+        public virtual decimal CalculateMonthlyCost() => 0;
 
-        // Kjo metodë është virtuale, për të cilën mund të bëhet override
-        public virtual decimal CalculateMonthlyCost()
-        {
-            return 0; // default = 0, mund të ndryshohet në Student apo Staff
-        }
+        public virtual string GetInfo() => $"{Id} | {Name}";
     }
+
 }
+
+
+

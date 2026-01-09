@@ -7,7 +7,7 @@ namespace DormitoryAndCafeteriaSystem
 {
     public class CafeteriaSystem
     {
-        private List<CafeteriaOrder> orders;
+        public List<CafeteriaOrder> orders;
 
         public CafeteriaSystem()
         {
@@ -21,30 +21,28 @@ namespace DormitoryAndCafeteriaSystem
             int id;
             while (true)
             {
-                Console.Write("Enter Student ID: ");
-                string? input = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(input) && int.TryParse(input, out id)) break;
-                Console.WriteLine("Invalid input, please enter a number.");
+                Console.Write("Student ID: ");
+                if (int.TryParse(Console.ReadLine(), out id)) break;
+                Console.WriteLine("Invalid input!");
             }
 
             var student = students.Find(s => s.Id == id);
             if (student == null)
             {
-                Console.WriteLine("Student not found.");
+                Console.WriteLine("Student not found!");
                 Pause();
                 return;
             }
 
             Console.Write("Product: ");
-            string product = Console.ReadLine() ?? string.Empty;
+            string product = Console.ReadLine() ?? "";
 
             decimal price;
             while (true)
             {
                 Console.Write("Price: ");
-                string? inputPrice = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(inputPrice) && decimal.TryParse(inputPrice, out price)) break;
-                Console.WriteLine("Invalid input, please enter a decimal number.");
+                if (decimal.TryParse(Console.ReadLine(), out price)) break;
+                Console.WriteLine("Invalid price!");
             }
 
             var order = new CafeteriaOrder(product, price, id);
@@ -54,6 +52,7 @@ namespace DormitoryAndCafeteriaSystem
             Console.WriteLine("Order placed successfully.");
             Pause();
         }
+
 
         // -------------------- VIEW ORDERS --------------------
         public void ViewAllOrders()
