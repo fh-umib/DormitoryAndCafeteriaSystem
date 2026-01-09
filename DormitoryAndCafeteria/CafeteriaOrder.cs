@@ -36,5 +36,20 @@ namespace DormitoryAndCafeteriaSystem
         {
             return JsonSerializer.Deserialize<CafeteriaOrder>(File.ReadAllText(fileName))!;
         }
+        //public void SaveToFile(string filename)
+        //{
+        //    string json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+        //    File.WriteAllText(filename, json);
+        //}
+
+        //public static CafeteriaOrder? LoadFromFile(string filename)
+        //{
+        //    if (!File.Exists(filename)) return null;
+
+        //    string json = File.ReadAllText(filename);
+        //    CafeteriaOrder? order = JsonSerializer.Deserialize<CafeteriaOrder>(json);
+        //    return order;
+        //}
+
     }
 }

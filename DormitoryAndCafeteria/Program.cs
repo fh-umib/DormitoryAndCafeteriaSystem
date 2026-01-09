@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using DormitoryAndCafeteriaSystem;
 
 namespace DormitoryAndCafeteriaSystem
 {
@@ -21,30 +22,43 @@ namespace DormitoryAndCafeteriaSystem
 
                 switch (choice)
                 {
-                    case "1": 
-                        RegisterStudent(); 
+                    case "1": // Register New Student
+                        RegisterStudent();
                         break;
-                    case "2":
-                        ViewAllStudents(); 
+
+                    case "2": // View All Students
+                        ViewAllStudents();
                         break;
-                    case "3":
-                        cafeteria.PlaceOrder(students); 
+
+                    case "3": // Place Cafeteria Order
+                        cafeteria.PlaceOrder(students);
                         break;
-                    case "4": cafeteria.ViewAllOrders(); 
+
+                    case "4": // View All Orders
+                        cafeteria.ViewAllOrders();
                         break;
-                    case "5": ViewOrdersByDormitory();
+
+                    case "5": // View Orders By Dormitory
+                        ViewOrdersByDormitory();
                         break;
-                    case "6": ViewStudentMonthlyCost();
+
+                    case "6": // View Student Monthly Cost
+                        ViewStudentMonthlyCost();
                         break;
-                    case "7": RemoveStudent();
+
+                    case "7": // Remove Student
+                        RemoveStudent();
                         break;
-                    case "8":
+
+                    case "8": // Exit
                         SaveAllData();
                         Console.WriteLine("Exiting... Goodbye!");
                         return;
+
                     default:
                         Console.WriteLine("Invalid option!");
-                        Pause(); break;
+                        Pause();
+                        break;
                 }
             }
         }
@@ -71,6 +85,7 @@ namespace DormitoryAndCafeteriaSystem
         }
 
         // -------------------- CASE METHODS --------------------
+
         static void RegisterStudent()
         {
             int id;
@@ -83,12 +98,15 @@ namespace DormitoryAndCafeteriaSystem
             }
 
             Console.Write("Name: ");
-            string name = Console.ReadLine() ?? "";
+            string name = Console.ReadLine() ?? string.Empty;
+
+            Console.Write("Last Name: ");
+            string lastname = Console.ReadLine() ?? string.Empty;
 
             Console.Write("Dormitory: ");
-            string dormitory = Console.ReadLine() ?? "";
+            string dormitory = Console.ReadLine() ?? string.Empty;
 
-            var student = new Student(id, name, dormitory);
+            var student = new Student(id, name,lastname, dormitory);
             students.Add(student);
             student.SaveToFile($"student_{id}.json");
 
@@ -98,8 +116,16 @@ namespace DormitoryAndCafeteriaSystem
 
         static void ViewAllStudents()
         {
-            if (students.Count == 0) Console.WriteLine("No students found.");
-            else students.ForEach(s => Console.WriteLine(s));
+            if (students.Count == 0)
+                Console.WriteLine("No students found.");
+            else
+            {
+                Console.WriteLine("\nAll Students:");
+                foreach (var student in students)
+                {
+                    Console.WriteLine(student); // Student ToString() tregon ID, Name, Dormitory
+                }
+            }
             Pause();
         }
 
@@ -108,6 +134,7 @@ namespace DormitoryAndCafeteriaSystem
             Console.Write("Dormitory: ");
             string dorm = Console.ReadLine() ?? "";
             cafeteria.ViewOrdersByDormitory(students, dorm);
+            Pause();
         }
 
         static void ViewStudentMonthlyCost()
@@ -122,9 +149,14 @@ namespace DormitoryAndCafeteriaSystem
             }
 
             var student = students.Find(s => s.Id == id);
-            if (student == null) { Console.WriteLine("Student not found."); Pause(); return; }
+            if (student == null)
+            {
+                Console.WriteLine("Student not found.");
+                Pause();
+                return;
+            }
 
-            Console.WriteLine($"{student.Name} Monthly Cost: {student.CalculateMonthlyCost()}€");
+            Console.WriteLine($"{student.Name} | Dormitory: {student.Dormitory} | Monthly Fee: {student.CalculateMonthlyCost()}€");
             Console.WriteLine($"Total Spent in Cafeteria: {cafeteria.TotalSpentByStudent(id)}€");
             Pause();
         }
@@ -153,8 +185,8 @@ namespace DormitoryAndCafeteriaSystem
         {
             foreach (var file in Directory.GetFiles(".", "student_*.json"))
             {
-                try { students.Add(Student.LoadFromFile(file)); }
-                catch { }
+                Student? s = Student.LoadFromFile(file);
+                if (s != null) students.Add(s);
             }
         }
 

@@ -6,38 +6,45 @@ namespace DormitoryAndCafeteriaSystem
 {
     public class Student : Person
     {
-        public string Dormitory { get; set; } = string.Empty;
-        public decimal MonthlyFee { get; set; } = 100;
+       
 
-        public Student() : base(0, string.Empty) { } // For JSON
-
-        public Student(int id, string name, string dormitory)
+        public string Dormitory { get; set; }   // Konvikti
+        public string Lastname { get; set; } = string.Empty;
+        public decimal MonthlyFee { get; set; } 
+        public Student(int id, string name, string lastname, string dormitory)
             : base(id, name)
         {
             Dormitory = dormitory;
+             // default monthly fee
         }
 
-        public override decimal CalculateMonthlyCost()
+        public decimal CalculateMonthlyCost()
         {
             return MonthlyFee;
         }
 
-        public override string GetInfo()
+       
+            public override string ToString()
         {
-            return base.GetInfo() + $" | Dormitory: {Dormitory} | Fee: {MonthlyFee}€";
+            return $"{Id} | {Name} {Lastname} | {Dormitory}";
         }
 
-        public override string ToString() => GetInfo();
+        
 
-        public void SaveToFile(string fileName)
+        // ---------------- JSON METHODS ----------------
+
+        public void SaveToFile(string filename)
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            File.WriteAllText(fileName, JsonSerializer.Serialize(this, options));
+            string json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(filename, json);
         }
 
-        public static Student LoadFromFile(string fileName)
+        public static Student? LoadFromFile(string filename)
         {
-            return JsonSerializer.Deserialize<Student>(File.ReadAllText(fileName))!;
+            if (!File.Exists(filename)) return null;
+            string json = File.ReadAllText(filename);
+            Student? student = JsonSerializer.Deserialize<Student>(json);
+            return student;
         }
     }
 }

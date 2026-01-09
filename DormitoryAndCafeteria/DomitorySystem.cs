@@ -24,7 +24,10 @@ namespace DormitoryAndCafeteriaSystem
             Console.Write("Dormitory: ");
             string dormitory = Console.ReadLine() ?? string.Empty;
 
-            students.Add(new Student(id, name, dormitory));
+            Console.Write("Last Name: ");
+            string lastname = Console.ReadLine() ?? string.Empty;
+
+            students.Add(new Student(id, name, lastname, dormitory));
             Console.WriteLine("Student registered successfully.");
         }
 

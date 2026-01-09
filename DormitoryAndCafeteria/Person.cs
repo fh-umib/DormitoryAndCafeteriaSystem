@@ -2,24 +2,26 @@
 
 namespace DormitoryAndCafeteriaSystem
 {
-    public abstract class Person
+    public class Person
     {
         public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
 
-        protected Person(int id, string name)
+        public Person(int id, string name)
         {
             Id = id;
             Name = name;
         }
 
-        protected Person() { } // Required for JSON deserialization
-
-        public abstract decimal CalculateMonthlyCost();
-
         public virtual string GetInfo()
         {
-            return $"{Id} | {Name}";
+            return $"ID: {Id} | Name: {Name}";
+        }
+
+        // Kjo metodë është virtuale, për të cilën mund të bëhet override
+        public virtual decimal CalculateMonthlyCost()
+        {
+            return 0; // default = 0, mund të ndryshohet në Student apo Staff
         }
     }
 }
