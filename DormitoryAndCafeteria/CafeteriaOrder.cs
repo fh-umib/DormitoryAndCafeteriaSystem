@@ -19,7 +19,7 @@ namespace DormitoryAndCafeteriaSystem
 
         public override string ToString()
         {
-            return $"{Date:dd.MM.yyyy HH:mm} | {Product} | {Price}€ | ID:{PersonId}";
+            return $"{Date:dd.MM.yyyy HH:mm} | {Product} | {Price}€ | PersonID: {PersonId}";
         }
     }
 }

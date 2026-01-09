@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DormitoryAndCafeteriaSystem
 {
@@ -23,7 +19,7 @@ namespace DormitoryAndCafeteriaSystem
 
         public override string GetInfo()
         {
-            return base.GetInfo() + $" | Student | Pagesa: {MonthlyFee}";
+            return base.GetInfo() + $" | Student | Pagesa: {MonthlyFee}€";
         }
     }
 }

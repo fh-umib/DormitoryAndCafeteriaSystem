@@ -1,12 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DormitoryAndCafeteriaSystem1
+namespace DormitoryAndCafeteriaSystem
 {
-    class Person
+    public abstract class Person
     {
+        public int Id { get; set; }
+        public string Name { get; set; }
+
+        protected Person(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
+        public abstract decimal CalculateMonthlyCost();
+
+        public virtual string GetInfo()
+        {
+            return $"ID: {Id} | Emri: {Name}";
+        }
+
+        public override string ToString()
+        {
+            return GetInfo();
+        }
     }
 }
