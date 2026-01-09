@@ -10,7 +10,7 @@ namespace DormitoryAndCafeteriaSystem
     {
         public void Apply(Student student)
         {
-            Console.WriteLine($"Aplikimi për konvikt u pranua për studentin {student.Name}");
+            Console.WriteLine($"The dormitory application was accepted for the student {student.Name}");
         }
     }
 }

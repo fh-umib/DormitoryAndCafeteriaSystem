@@ -20,7 +20,7 @@ using System.Threading.Tasks;
                 }
 
                 room.AssignStudent();
-                Console.WriteLine($"Studenti {student.Name} u caktua në dhomën {room.RoomNumber}");
+                Console.WriteLine($"Student {student.Name} was assigned to the room{room.RoomNumber}");
             }
         }
     }
