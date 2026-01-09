@@ -10,8 +10,13 @@ namespace DormitoryAndCafeteriaSystem
     {
         
         
-            static List<Student> students = new();
+        static List<Student> students = new();
         static CafeteriaSystem cafeteria = new();
+        static DormitoryRules rules = new();
+        static DormitoryApplication application = new();
+        static AccomodationAssignment assignment = new();
+        static Payment payment = new();
+        static Room sampleRoom = new Room(101, 2);
 
         static void Main()
         {
@@ -56,8 +61,27 @@ namespace DormitoryAndCafeteriaSystem
                     case "7": // Remove Student
                         RemoveStudent();
                         break;
+                    case "8":
+                        rules.ShowRules();
+                        Pause();
+                        break;
 
-                    case "8": // Exit
+                    case "9":
+                        application.Apply(students[0]);
+                        Pause();
+                        break;
+
+                    case "10":
+                        assignment.AssignRoom(students[0], sampleRoom);
+                        Pause();
+                        break;
+
+                    case "11":
+                        payment.PayMonthlyFee(students[0]);
+                        Pause();
+                        break;
+
+                    case "12": // Exit
                         SaveAllData();
                         Console.WriteLine("Exiting... Goodbye!");
                         return;
@@ -80,7 +104,12 @@ namespace DormitoryAndCafeteriaSystem
             Console.WriteLine("5. View Orders By Dormitory");
             Console.WriteLine("6. View Student Monthly Cost");
             Console.WriteLine("7. Remove Student");
-            Console.WriteLine("8. Exit");
+            Console.WriteLine("8. View dorm rules");
+            Console.WriteLine("9. Apply for dorm");
+            Console.WriteLine("10. Assign room to student");
+            Console.WriteLine("11. Pay monthly fee");
+            Console.WriteLine("12. Exit");
+
             Console.WriteLine("==========================================\n");
             Console.Write("Enter choice: ");
         }
