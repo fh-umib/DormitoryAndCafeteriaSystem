@@ -1,15 +1,20 @@
 ﻿using System;
+using System.IO;
+using System.Text.Json;
 
 namespace DormitoryAndCafeteriaSystem
 {
     public class Student : Person
     {
-        public decimal MonthlyFee { get; set; }
+        public string Dormitory { get; set; } = string.Empty;
+        public decimal MonthlyFee { get; set; } = 100;
 
-        public Student(int id, string name)
+        public Student() : base(0, string.Empty) { } // For JSON
+
+        public Student(int id, string name, string dormitory)
             : base(id, name)
         {
-            MonthlyFee = 100;
+            Dormitory = dormitory;
         }
 
         public override decimal CalculateMonthlyCost()
@@ -19,7 +24,20 @@ namespace DormitoryAndCafeteriaSystem
 
         public override string GetInfo()
         {
-            return base.GetInfo() + $" | Student | Pagesa: {MonthlyFee}€";
+            return base.GetInfo() + $" | Dormitory: {Dormitory} | Fee: {MonthlyFee}€";
+        }
+
+        public override string ToString() => GetInfo();
+
+        public void SaveToFile(string fileName)
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            File.WriteAllText(fileName, JsonSerializer.Serialize(this, options));
+        }
+
+        public static Student LoadFromFile(string fileName)
+        {
+            return JsonSerializer.Deserialize<Student>(File.ReadAllText(fileName))!;
         }
     }
 }

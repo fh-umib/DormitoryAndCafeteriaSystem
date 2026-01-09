@@ -5,7 +5,7 @@ namespace DormitoryAndCafeteriaSystem
     public abstract class Person
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         protected Person(int id, string name)
         {
@@ -13,16 +13,13 @@ namespace DormitoryAndCafeteriaSystem
             Name = name;
         }
 
+        protected Person() { } // Required for JSON deserialization
+
         public abstract decimal CalculateMonthlyCost();
 
         public virtual string GetInfo()
         {
-            return $"ID: {Id} | Emri: {Name}";
-        }
-
-        public override string ToString()
-        {
-            return GetInfo();
+            return $"{Id} | {Name}";
         }
     }
 }
