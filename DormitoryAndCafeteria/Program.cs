@@ -17,6 +17,8 @@ namespace DormitoryAndCafeteriaSystem
         static AccomodationAssignment assignment = new();
         static Payment payment = new();
         static Room sampleRoom = new Room(101, 2);
+        static List<Room> rooms = new List<Room>();
+
 
         static void Main()
         {
@@ -24,6 +26,7 @@ namespace DormitoryAndCafeteriaSystem
             Console.OutputEncoding = Encoding.UTF8;
             Console.InputEncoding = Encoding.UTF8;
 
+            InitializeRooms();
             LoadAllStudents();
 
             while (true)
@@ -72,9 +75,10 @@ namespace DormitoryAndCafeteriaSystem
                         break;
 
                     case "10":
-                        assignment.AssignRoom(students[0], sampleRoom);
+                        assignment.AssignRoom(students[0], rooms); // Perdor listen e dhomave
                         Pause();
                         break;
+
 
                     case "11":
                         payment.PayMonthlyFee(students[0]);
@@ -232,6 +236,15 @@ namespace DormitoryAndCafeteriaSystem
             cafeteria.SaveAllOrders();
         }
         
+        static void InitializeRooms()
+        {
+            for (int i = 1; i <= 10; i++) // 10 dhoma si shembull
+            {
+                rooms.Add(new Room(i, 2)); // secila dhomë ka 2 studentë max
+            }
+        }
+
+
 
     }
 }

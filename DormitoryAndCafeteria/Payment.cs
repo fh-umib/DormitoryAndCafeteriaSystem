@@ -4,7 +4,16 @@
     {
         public void PayMonthlyFee(Student student)
         {
-            Console.WriteLine($"{student.Name} pagoi {student.CalculateMonthlyCost()}€ për muajin aktual.");
+            if (student.HasPaid)
+            {
+                Console.WriteLine($"{student.Name} has already paid for this month.");
+            }
+            else
+            {
+                Console.WriteLine($"{student.Name} paid {student.CalculateMonthlyCost()}€ for the current month.");
+                student.HasPaid = true;
+            }
         }
     }
+
 }

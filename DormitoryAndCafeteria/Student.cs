@@ -4,31 +4,28 @@ using System.Text.Json;
 
 namespace DormitoryAndCafeteriaSystem
 {
-    public class Student : Person
+    public class Student
     {
-       
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string LastName { get; set; }
+        public string Dormitory { get; set; } = "";
+        public string? AppliedDormitory { get; set; } = null;
 
-        public string Dormitory { get; set; }   // Konvikti
-        public string Lastname { get; set; } = string.Empty;
-        public decimal MonthlyFee { get; set; } 
         public Student(int id, string name, string lastname, string dormitory)
-            : base(id, name)
         {
+            Id = id;
+            Name = name;
+            LastName = lastname;
             Dormitory = dormitory;
-             // default monthly fee
         }
-
-        public override decimal CalculateMonthlyCost()
-        {
-            return 150;
-        }
-
-
 
         public override string ToString()
         {
-            return $"{Id} | {Name} {Lastname} | {Dormitory}";
+            return $"{Id} - {Name} {LastName} | Dormitory: {Dormitory} | Applied: {AppliedDormitory ?? "None"}";
         }
+
+    // Save & Load JSON mbetet siç është
 
 
 
@@ -51,5 +48,12 @@ namespace DormitoryAndCafeteriaSystem
             Student? student = JsonSerializer.Deserialize<Student>(json);
             return student;
         }
+        public bool HasPaid { get; set; } = false;
+
+        public decimal CalculateMonthlyCost()
+        {
+            return 150; // ose mund të llogaritet në varësi të konviktit dhe kafeterisë
+        }
+
     }
 }
