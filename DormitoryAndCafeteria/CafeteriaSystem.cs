@@ -45,25 +45,25 @@ namespace DormitoryAndCafeteriaSystem
                 return;
             }
 
-            // 🔴 KËTU ËSHTË LOGJIKA E 150€
+            // KËTU ËSHTË LOGJIKA E 150€
             if (student.CurrentCafeteriaDebt + price > 150)
             {
-                Console.WriteLine("❌ Nuk lejohet: e ke kalu limitin mujor 150€.");
-                Console.WriteLine("👉 Duhet me pagu CASH.");
+                Console.WriteLine("Nuk lejohet: e ke kalu limitin mujor 150€.");
+                Console.WriteLine("Duhet me pagu CASH.");
                 Pause();
                 return;
             }
 
-            // ✅ NËSE NUK E KALON LIMITIN
+            // NËSE NUK E KALON LIMITIN
             var order = new CafeteriaOrder(product, price, id);
             orders.Add(order);
 
-            student.CurrentCafeteriaDebt += price;   // ⬅️ SHUMË E RËNDËSISHME
+            student.CurrentCafeteriaDebt += price;   // SHUME E RENDESISHME
             student.SaveToFile($"student_{id}.json");
 
             order.SaveToFile($"order_{id}_{DateTime.Now.Ticks}.json");
 
-            Console.WriteLine("✅ Order placed successfully.");
+            Console.WriteLine("Order placed successfully.");
             Pause();
         }
 

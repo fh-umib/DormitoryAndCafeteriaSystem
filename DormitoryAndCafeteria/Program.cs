@@ -103,14 +103,24 @@ namespace DormitoryAndCafeteriaSystem
                                 student.SaveToFile($"student_{student.Id}.json");
                             }
 
-                            Console.WriteLine("✅ NEW MONTH STARTED");
-                            Console.WriteLine("➡ Cafeteria debt reset to 0€");
-                            Console.WriteLine("➡ Monthly payments reset");
+                            Console.WriteLine("NEW MONTH STARTED");
+                            Console.WriteLine("Cafeteria debt reset to 0€");
+                            Console.WriteLine("Monthly payments reset");
                             Pause();
                             break;
                         }
+                    case "13":
+                        {
+                            var student = SelectStudent();
+                            if (student == null)
+                                Console.WriteLine("Student not found.");
+                            else
+                                assignment.Checkout(student, rooms);
 
-                    case "13": // Exit
+                            Pause();
+                            break;
+                        }
+                    case "14": // Exit
                         SaveAllData();
                         Console.WriteLine("Exiting... Goodbye!");
                         return;
@@ -138,7 +148,8 @@ namespace DormitoryAndCafeteriaSystem
             Console.WriteLine("10. Assign room to student");
             Console.WriteLine("11. Pay monthly fee");
             Console.WriteLine("12. Reset monthly data (admin)");
-            Console.WriteLine("13. Exit");
+            Console.WriteLine("13. Checkout student from room");
+            Console.WriteLine("14. Exit");
 
             Console.WriteLine("==========================================\n");
             Console.Write("Enter choice: ");

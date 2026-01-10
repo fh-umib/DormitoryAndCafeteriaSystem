@@ -13,6 +13,8 @@ namespace DormitoryAndCafeteriaSystem
         public string? AppliedDormitory { get; set; } = null;
         public decimal MonthlyLimit { get; set; } = 150;
         public decimal CurrentCafeteriaDebt { get; set; } = 0;
+        public int? AssignedRoomNumber { get; set; } = null;
+
         public bool CanOrder(decimal price)
         {
             return CurrentCafeteriaDebt + price <= MonthlyLimit;
@@ -60,7 +62,7 @@ namespace DormitoryAndCafeteriaSystem
 
         public decimal CalculateMonthlyCost()
         {
-            return 150; // ose mund të llogaritet në varësi të konviktit dhe kafeterisë
+            return 150; // ose mund te llogaritet ne varesi te konviktit dhe kafeterise
         }
         public void ResetMonthlyData()
         {
