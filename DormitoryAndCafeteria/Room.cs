@@ -1,4 +1,8 @@
-﻿namespace DormitoryAndCafeteriaSystem
+﻿using System.Text.Json;
+using System.IO;
+using System;
+
+namespace DormitoryAndCafeteriaSystem
 {
     public class Room
     {
@@ -29,5 +33,16 @@
                 Console.WriteLine("Room is full!");
             }
         }
+       
+public void Save(string file)
+    {
+        File.WriteAllText(file, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
     }
+
+    public static Room Load(string file)
+    {
+        return JsonSerializer.Deserialize<Room>(File.ReadAllText(file))!;
+    }
+
+}
 }

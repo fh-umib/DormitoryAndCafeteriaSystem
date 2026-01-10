@@ -11,6 +11,14 @@ namespace DormitoryAndCafeteriaSystem
         public string LastName { get; set; }
         public string Dormitory { get; set; } = "";
         public string? AppliedDormitory { get; set; } = null;
+        public decimal MonthlyLimit { get; set; } = 150;
+        public decimal CurrentCafeteriaDebt { get; set; } = 0;
+        public bool CanOrder(decimal price)
+        {
+            return CurrentCafeteriaDebt + price <= MonthlyLimit;
+        }
+        
+
 
         public Student(int id, string name, string lastname, string dormitory)
         {
@@ -54,6 +62,13 @@ namespace DormitoryAndCafeteriaSystem
         {
             return 150; // ose mund të llogaritet në varësi të konviktit dhe kafeterisë
         }
+        public void ResetMonthlyData()
+        {
+            CurrentCafeteriaDebt = 0;
+            HasPaid = false;
+        }
+
+
 
     }
 }

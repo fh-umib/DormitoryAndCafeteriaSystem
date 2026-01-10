@@ -18,15 +18,15 @@ namespace DormitoryAndCafeteriaSystem
         // -------------------- PLACE ORDER --------------------
         public void PlaceOrder(List<Student> students)
         {
-            int id;
-            while (true)
+            Console.Write("Student ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
             {
-                Console.Write("Student ID: ");
-                if (int.TryParse(Console.ReadLine(), out id)) break;
-                Console.WriteLine("Invalid input!");
+                Console.WriteLine("Invalid ID!");
+                Pause();
+                return;
             }
 
-            var student = students.Find(s => s.Id == id);
+            var student = students.FirstOrDefault(s => s.Id == id);
             if (student == null)
             {
                 Console.WriteLine("Student not found!");
@@ -37,19 +37,33 @@ namespace DormitoryAndCafeteriaSystem
             Console.Write("Product: ");
             string product = Console.ReadLine() ?? "";
 
-            decimal price;
-            while (true)
+            Console.Write("Price: ");
+            if (!decimal.TryParse(Console.ReadLine(), out decimal price))
             {
-                Console.Write("Price: ");
-                if (decimal.TryParse(Console.ReadLine(), out price)) break;
                 Console.WriteLine("Invalid price!");
+                Pause();
+                return;
             }
 
+            // 🔴 KËTU ËSHTË LOGJIKA E 150€
+            if (student.CurrentCafeteriaDebt + price > 150)
+            {
+                Console.WriteLine("❌ Nuk lejohet: e ke kalu limitin mujor 150€.");
+                Console.WriteLine("👉 Duhet me pagu CASH.");
+                Pause();
+                return;
+            }
+
+            // ✅ NËSE NUK E KALON LIMITIN
             var order = new CafeteriaOrder(product, price, id);
             orders.Add(order);
+
+            student.CurrentCafeteriaDebt += price;   // ⬅️ SHUMË E RËNDËSISHME
+            student.SaveToFile($"student_{id}.json");
+
             order.SaveToFile($"order_{id}_{DateTime.Now.Ticks}.json");
 
-            Console.WriteLine("Order placed successfully.");
+            Console.WriteLine("✅ Order placed successfully.");
             Pause();
         }
 

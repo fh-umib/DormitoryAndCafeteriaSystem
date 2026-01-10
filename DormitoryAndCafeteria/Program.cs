@@ -22,7 +22,7 @@ namespace DormitoryAndCafeteriaSystem
 
         static void Main()
         {
-            // Set console encoding to UTF-8 to support special characters like 
+            // Set console encoding to UTF-8 to support special characters 
             Console.OutputEncoding = Encoding.UTF8;
             Console.InputEncoding = Encoding.UTF8;
 
@@ -70,22 +70,47 @@ namespace DormitoryAndCafeteriaSystem
                         break;
 
                     case "9":
-                        application.Apply(students[0]);
-                        Pause();
-                        break;
+                        {
+                            var student = SelectStudent();
+                            if (student == null) Console.WriteLine("Student not found!");
+                            else application.Apply(student);
+                            Pause();
+                            break;
+                        }
 
                     case "10":
-                        assignment.AssignRoom(students[0], rooms); // Perdor listen e dhomave
-                        Pause();
-                        break;
-
+                        {
+                            var student = SelectStudent();
+                            if (student == null) Console.WriteLine("Student not found!");
+                            else assignment.AssignRoom(student, rooms);
+                            Pause();
+                            break;
+                        }
 
                     case "11":
-                        payment.PayMonthlyFee(students[0]);
-                        Pause();
-                        break;
+                        {
+                            var student = SelectStudent();
+                            if (student == null) Console.WriteLine("Student not found!");
+                            else payment.PayMonthlyFee(student);
+                            Pause();
+                            break;
+                        }
+                    case "12":
+                        {
+                            foreach (var student in students)
+                            {
+                                student.ResetMonthlyData();
+                                student.SaveToFile($"student_{student.Id}.json");
+                            }
 
-                    case "12": // Exit
+                            Console.WriteLine("✅ NEW MONTH STARTED");
+                            Console.WriteLine("➡ Cafeteria debt reset to 0€");
+                            Console.WriteLine("➡ Monthly payments reset");
+                            Pause();
+                            break;
+                        }
+
+                    case "13": // Exit
                         SaveAllData();
                         Console.WriteLine("Exiting... Goodbye!");
                         return;
@@ -112,7 +137,8 @@ namespace DormitoryAndCafeteriaSystem
             Console.WriteLine("9. Apply for dorm");
             Console.WriteLine("10. Assign room to student");
             Console.WriteLine("11. Pay monthly fee");
-            Console.WriteLine("12. Exit");
+            Console.WriteLine("12. Reset monthly data (admin)");
+            Console.WriteLine("13. Exit");
 
             Console.WriteLine("==========================================\n");
             Console.Write("Enter choice: ");
@@ -234,15 +260,49 @@ namespace DormitoryAndCafeteriaSystem
         {
             foreach (var s in students) s.SaveToFile($"student_{s.Id}.json");
             cafeteria.SaveAllOrders();
+            foreach (var room in rooms)
+            {
+                room.Save($"room_{room.RoomNumber}.json");
+            }
+
         }
-        
+
         static void InitializeRooms()
         {
-            for (int i = 1; i <= 10; i++) // 10 dhoma si shembull
+            rooms.Clear();
+
+            // 1️⃣ Provo me i ngarku dhomat nga JSON
+            foreach (var file in Directory.GetFiles(".", "room_*.json"))
             {
-                rooms.Add(new Room(i, 2)); // secila dhomë ka 2 studentë max
+                try
+                {
+                    rooms.Add(Room.Load(file));
+                }
+                catch
+                {
+                    Console.WriteLine($"Failed to load {file}");
+                }
+            }
+
+            // 2️⃣ Nëse nuk ka asnjë room.json, krijo dhoma të reja
+            if (rooms.Count == 0)
+            {
+                for (int i = 1; i <= 10; i++)
+                {
+                    rooms.Add(new Room(i, 2));
+                }
             }
         }
+
+        static Student? SelectStudent()
+        {
+            Console.Write("Enter student ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+                return null;
+
+            return students.FirstOrDefault(s => s.Id == id);
+        }
+
 
 
 
