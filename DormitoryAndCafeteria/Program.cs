@@ -120,7 +120,7 @@ namespace DormitoryAndCafeteriaSystem
                             Pause();
                             break;
                         }
-                    case "14": // Exit
+                    case "0": // Exit
                         SaveAllData();
                         Console.WriteLine("Exiting... Goodbye!");
                         return;
@@ -141,7 +141,7 @@ namespace DormitoryAndCafeteriaSystem
             Console.WriteLine("3. Place Cafeteria Order");
             Console.WriteLine("4. View All Orders");
             Console.WriteLine("5. View Orders By Dormitory");
-            Console.WriteLine("6. View Student Monthly Cost");
+            Console.WriteLine("6. View Student Monthly Spending");
             Console.WriteLine("7. Remove Student");
             Console.WriteLine("8. View dorm rules");
             Console.WriteLine("9. Apply for dorm");
@@ -149,7 +149,7 @@ namespace DormitoryAndCafeteriaSystem
             Console.WriteLine("11. Pay monthly fee");
             Console.WriteLine("12. Reset monthly data (admin)");
             Console.WriteLine("13. Checkout student from room");
-            Console.WriteLine("14. Exit");
+            Console.WriteLine("0. Exit");
 
             Console.WriteLine("==========================================\n");
             Console.Write("Enter choice: ");

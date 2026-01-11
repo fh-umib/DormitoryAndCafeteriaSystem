@@ -31,6 +31,7 @@ namespace DormitoryAndCafeteriaSystem
             else
             {
                 Console.WriteLine("Room is full!");
+                //Shtoje qe nese eshte full te aplikon per nje dhome tjeter 
             }
         }
        
