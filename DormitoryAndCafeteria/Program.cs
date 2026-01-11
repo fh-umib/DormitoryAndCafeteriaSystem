@@ -148,7 +148,7 @@ namespace DormitoryAndCafeteriaSystem
             Console.WriteLine("10. Assign room to student");
             Console.WriteLine("11. Pay monthly fee");
             Console.WriteLine("12. Reset monthly data (admin)");
-            Console.WriteLine("13. Checkout student from room");
+            Console.WriteLine("13. Checkout student (show assigned room)");
             Console.WriteLine("0. Exit");
 
             Console.WriteLine("==========================================\n");

@@ -61,22 +61,42 @@ namespace DormitoryAndCafeteriaSystem
         {
             if (student.AssignedRoomNumber == null)
             {
-                Console.WriteLine("Student is not assigned to any room.");
+                Console.WriteLine($"Student {student.Name} is not assigned to any room.");
                 return;
             }
 
-            var room = rooms.FirstOrDefault(r => r.RoomNumber == student.AssignedRoomNumber);
-            if (room != null && room.Occupied > 0)
+            int roomNumber = student.AssignedRoomNumber.Value;
+
+            var room = rooms.FirstOrDefault(r => r.RoomNumber == roomNumber);
+            if (room == null)
             {
-                room.Occupied--;
+                Console.WriteLine("Room data not found.");
+                return;
             }
 
-            Console.WriteLine(
-                $"Student {student.Name} checked out from room {student.AssignedRoomNumber}"
-            );
+            Console.WriteLine("===== CHECKOUT INFO =====");
+            Console.WriteLine($"Student: {student.Name} {student.LastName}");
+            Console.WriteLine($"Currently assigned room: {room.RoomNumber}");
+            Console.WriteLine($"Occupancy before checkout: {room.Occupied}/{room.Capacity}");
+            Console.WriteLine("=========================");
 
+            Console.Write("Confirm checkout? (y/n): ");
+            string? confirm = Console.ReadLine();
+
+            if (confirm?.ToLower() != "y")
+            {
+                Console.WriteLine("Checkout cancelled.");
+                return;
+            }
+
+            // CHECKOUT
+            room.Occupied--;
             student.AssignedRoomNumber = null;
+
+            Console.WriteLine("Checkout completed successfully.");
+            Console.WriteLine($"Room {room.RoomNumber} occupancy is now {room.Occupied}/{room.Capacity}");
         }
+
 
     }
 
