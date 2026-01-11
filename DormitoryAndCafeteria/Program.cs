@@ -180,14 +180,14 @@ namespace DormitoryAndCafeteriaSystem
             Console.Write("Last Name: ");
             string lastname = Console.ReadLine() ?? string.Empty;
 
-            Console.Write("Dormitory: ");
-            string dormitory = Console.ReadLine() ?? string.Empty;
-
-            var student = new Student(id, name,lastname, dormitory);
-            students.Add(student);
-            student.SaveToFile($"student_{id}.json");
+            Console.Write("University: ");
+            string university = Console.ReadLine() ?? string.Empty;
 
             Console.WriteLine("Student registered successfully.");
+
+            var student = new Student(id, name, lastname, university);
+            students.Add(student);
+            student.SaveToFile($"student_{id}.json");
             Pause();
         }
 
