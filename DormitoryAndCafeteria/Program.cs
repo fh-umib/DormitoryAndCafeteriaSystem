@@ -6,19 +6,35 @@ using System.Text;
 
 namespace DormitoryAndCafeteriaSystem
 {
+    // Klasa kryesore e aplikacionit (Entry Point).
+    // Koordinon rrjedhen e programit dhe therret sherbimet perkatese,
+    // pa permbajtur logjike biznesi.
     class Program
     {
-        
-        
-        static List<Student> students = new();
-        static CafeteriaSystem cafeteria = new();
-        static DormitoryRules rules = new();
-        static DormitoryApplication application = new();
-        static AccomodationAssignment assignment = new();
-        static Payment payment = new();
-        static Room sampleRoom = new Room(101, 2);
-        static List<Room> rooms = new List<Room>();
 
+        // Lista statike qe mban te gjithe studentet e regjistruar gjate ekzekutimit te programit.
+        // Perdoret si memorie qendrore (RAM) dhe sinkronizohet me JSON per ruajtje te përhershme.
+        static List<Student> students = new();
+        // Objekt statik i sistemit te menses.
+        // Menaxhon porosite, shpenzimet mujore dhe raportet e studenteve.
+        static CafeteriaSystem cafeteria = new();
+        // Objekt statik qe permban rregullat e konviktit.
+        // Shfaq rregullat per studentet kur kerkohet nga menuja.
+        static DormitoryRules rules = new();
+        // Objekt statik qe menaxhon aplikimet e studenteve per konvikt.
+        // Kontrollon nese studenti ka aplikuar dhe ruan gjendjen e aplikimit.
+        static DormitoryApplication application = new();
+        // Objekt statik pergjegjes per caktimin dhe lirimin e dhomave te konviktit.
+        // Punon me listen e dhomave dhe statusin e studenteve.
+        static AccomodationAssignment assignment = new();
+        // Objekt statik per menaxhimin e pagesave mujore te studenteve.
+        // Kontrollon nese pagesa eshte kryer dhe perditeson statusin perkates.
+        static Payment payment = new();
+        // Lista statike qe permban te gjitha dhomat e konviktit.
+        // Çdo dhome eshte objekt i klases Room dhe ruhet/ngarkohet nga JSON.
+        static List<Room> rooms = new List<Room>();
+        
+        
 
         static void Main()
         {
@@ -57,14 +73,14 @@ namespace DormitoryAndCafeteriaSystem
                         ViewOrdersByDormitory();
                         break;
 
-                    case "6": // View Student Monthly Cost
+                    case "6": // View Student Monthly Spending
                         ViewStudentMonthlyCost();
                         break;
 
                     case "7": // Remove Student
                         RemoveStudent();
                         break;
-                    case "8":
+                    case "8": // Show Rules
                         rules.ShowRules();
                         Pause();
                         break;
@@ -147,7 +163,7 @@ namespace DormitoryAndCafeteriaSystem
             Console.WriteLine("9. Apply for dorm");
             Console.WriteLine("10. Assign room to student");
             Console.WriteLine("11. Pay monthly fee");
-            Console.WriteLine("12. Reset monthly data (admin)");
+            Console.WriteLine("12. Reset monthly data");
             Console.WriteLine("13. Checkout student (show assigned room)");
             Console.WriteLine("0. Exit");
 
@@ -161,7 +177,7 @@ namespace DormitoryAndCafeteriaSystem
             Console.ReadKey();
         }
 
-        // -------------------- CASE METHODS --------------------
+        // -------------------- Metodat e case-ave --------------------
 
         static void RegisterStudent()
         {
@@ -206,7 +222,7 @@ namespace DormitoryAndCafeteriaSystem
             Pause();
         }
 
-        static void ViewOrdersByDormitory()
+        static void ViewOrdersByDormitory() //case 5
         {
             Console.Write("Dormitory: ");
             string dorm = Console.ReadLine() ?? "";
@@ -295,7 +311,7 @@ namespace DormitoryAndCafeteriaSystem
                 }
             }
 
-            // 2️⃣ Nëse nuk ka asnjë room.json, krijo dhoma të reja
+            // 2️⃣ Nese nuk ka asnje room.json, krijo dhoma te reja
             if (rooms.Count == 0)
             {
                 for (int i = 1; i <= 10; i++)
