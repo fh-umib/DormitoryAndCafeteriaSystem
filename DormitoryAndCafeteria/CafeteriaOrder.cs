@@ -11,7 +11,7 @@ namespace DormitoryAndCafeteriaSystem
         public int StudentId { get; set; }
         public DateTime Date { get; set; }
 
-        public CafeteriaOrder() { } // For JSON
+        public CafeteriaOrder() { } 
 
         public CafeteriaOrder(string product, decimal price, int studentId)
         {
@@ -26,15 +26,15 @@ namespace DormitoryAndCafeteriaSystem
             return $"{Date:dd.MM.yyyy HH:mm} | {Product} | {Price}€ | StudentID: {StudentId}";
         }
 
-        public void SaveToFile(string fileName)
-        {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            File.WriteAllText(fileName, JsonSerializer.Serialize(this, options));
-        }
+        //public void SaveToFile(string fileName)
+        //{
+        //    var options = new JsonSerializerOptions { WriteIndented = true };
+        //    File.WriteAllText(fileName, JsonSerializer.Serialize(this, options));
+        //}
 
-        public static CafeteriaOrder LoadFromFile(string fileName)
-        {
-            return JsonSerializer.Deserialize<CafeteriaOrder>(File.ReadAllText(fileName))!;
-        }
+        //public static CafeteriaOrder LoadFromFile(string fileName)
+        //{
+        //    return JsonSerializer.Deserialize<CafeteriaOrder>(File.ReadAllText(fileName))!;
+        //}
     }
 }

@@ -5,8 +5,10 @@ namespace DormitoryAndCafeteriaSystem.Repositories.Interfaces
 {
     public interface IStudentRepository
     {
-        List<StudentEntity> GetAll();
-        StudentEntity? GetById(int id);
-        void Add(StudentEntity student);
+        void Add(Student student);
+        void Remove(int id);
+        Student? GetById(int id);
+        List<Student> GetAll();
+        void Update(Student student);
     }
 }

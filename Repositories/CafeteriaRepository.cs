@@ -14,7 +14,8 @@ namespace DormitoryAndCafeteriaSystem.Repositories
             using var conn = DbConnectionFactory.Create();
             conn.Open();
 
-            using var cmd = new NpgsqlCommand("SELECT * FROM CafeteriaOrder", conn);
+            // --- RREGULLIMI: tabela e sakte nga DB ---
+            using var cmd = new NpgsqlCommand("SELECT * FROM CafeteriaOrderNew", conn);
             using var reader = cmd.ExecuteReader();
 
             while (reader.Read())
@@ -23,7 +24,8 @@ namespace DormitoryAndCafeteriaSystem.Repositories
                 {
                     OrderID = reader.GetInt32(0),
                     StudentID = reader.GetInt32(1),
-                    CafeteriaID = reader.GetInt32(2),
+                    // Shiko nëse ke CafeteriaID në tabelën tende. Nëse jo, hiqe ose zevendeso.
+                    CafeteriaID = reader.IsDBNull(2) ? 0 : reader.GetInt32(2),
                     OrderDate = reader.GetDateTime(3),
                     TotalAmount = reader.GetDecimal(4),
                     Status = reader.GetString(5)

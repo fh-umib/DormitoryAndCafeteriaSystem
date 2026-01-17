@@ -1,161 +1,47 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Npgsql;
-
+using DormitoryAndCafeteriaSystem.Entities;
+using DormitoryAndCafeteriaSystem.Services;
 
 namespace DormitoryAndCafeteriaSystem
 {
-    // Klasa kryesore e aplikacionit (Entry Point).
-    // Koordinon rrjedhen e programit dhe therret sherbimet perkatese,
-    // pa permbajtur logjike biznesi.
     class Program
     {
-        
-        static List<Student> students = new();
-        static CafeteriaSystem cafeteria = new();
-        static DormitoryRules rules = new();
-        static DormitoryApplication application = new();
-        static AccomodationAssignment assignment = new();
-        static Payment payment = new();
-        static List<Room> rooms = new List<Room>();
-        
-        
+        private static StudentService studentService = new StudentService();
+        private static RoomService roomService = new RoomService();
+        private static CafeteriaService cafeteriaService = new CafeteriaService();
 
         static void Main()
         {
-            
-                Console.OutputEncoding = Encoding.UTF8;
-                Console.InputEncoding = Encoding.UTF8;
-
-
-
-            // Testo lidhjen me databazën para se të hapet menuja
-            DormitoryAndCafeteriaSystem.Data.DatabaseTester.TestDatabase();
-
-            InitializeRooms();
-
-            
-
-            //LoadAllStudents();
-
-            DisplayMenu();
-
-            // Set console encoding to UTF-8 to support special characters 
-            Console.OutputEncoding = Encoding.UTF8;
-            Console.InputEncoding = Encoding.UTF8;
-
-            InitializeRooms();
-            //LoadAllStudents();
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.InputEncoding = System.Text.Encoding.UTF8;
 
             while (true)
             {
-                Console.Clear();
                 DisplayMenu();
                 string choice = Console.ReadLine() ?? "";
 
                 switch (choice)
                 {
-                    case "1": // Register New Student
-                        RegisterStudent();
-                        break;
-
-                    case "2": // View All Students
-                        ViewAllStudents();
-                        break;
-
-
-                    case "3": // Place Cafeteria Order
-                        cafeteria.PlaceOrder(students);
-                        break;
-
-                    case "4": // View All Orders
-                        cafeteria.ViewAllOrders();
-                        break;
-
-                    case "5": // View Orders By Dormitory
-                        ViewOrdersByDormitory();
-                        break;
-
-                    case "6": // View Student Monthly Spending
-                        ViewStudentMonthlyCost();
-                        break;
-
-                    case "7": // Remove Student
-                        RemoveStudent();
-                        break;
-                    case "8": // Show Rules
-                        rules.ShowRules();
-                        Pause();
-                        break;
-
-                    case "9":
-                        {
-                            var student = SelectStudent();
-                            if (student == null) Console.WriteLine("Student not found!");
-                            else application.Apply(student);
-                            Pause();
-                            break;
-                        }
-
-                    case "10":
-                        {
-                            var student = SelectStudent();
-                            if (student == null) Console.WriteLine("Student not found!");
-                            else assignment.AssignRoom(student, rooms);
-                            Pause();
-                            break;
-                        }
-
-                    case "11":
-                        {
-                            var student = SelectStudent();
-                            if (student == null) Console.WriteLine("Student not found!");
-                            else payment.PayMonthlyFee(student);
-                            Pause();
-                            break;
-                        }
-                    case "12":
-                        {
-                            foreach (var student in students)
-                            {
-                                student.ResetMonthlyData();
-                                student.SaveToFile($"student_{student.Id}.json");
-                            }
-
-                            Console.WriteLine("NEW MONTH STARTED");
-                            Console.WriteLine("Cafeteria debt reset to 0€");
-                            Console.WriteLine("Monthly payments reset");
-                            Pause();
-                            break;
-                        }
-                    case "13":
-                        {
-                            var student = SelectStudent();
-                            if (student == null)
-                                Console.WriteLine("Student not found.");
-                            else
-                                assignment.Checkout(student, rooms);
-
-                            Pause();
-                            break;
-                        }
-                    case "0": // Exit
-                        //SaveAllData();
-                        Console.WriteLine("Exiting... Goodbye!");
-                        return;
-
-                    default:
-                        Console.WriteLine("Invalid option!");
-                        Pause();
-                        break;
+                    case "1": RegisterStudent(); break;
+                    case "2": studentService.ViewAllStudents(); Pause(); break;
+                    case "3": PlaceCafeteriaOrder(); break;
+                    case "4": cafeteriaService.ViewAllOrders(); Pause(); break;
+                    case "5": ViewOrdersByDormitory(); break;
+                    case "6": ViewStudentMonthlyCost(); break;
+                    case "7": RemoveStudent(); break;
+                    case "8": roomService.ShowDormRules(); Pause(); break;
+                    case "9": ApplyForDorm(); break;
+                    case "10": AssignRoom(); break;
+                    case "11": PayMonthlyFee(); break;
+                    case "0": Console.WriteLine("Exiting... Goodbye!"); return;
+                    default: Console.WriteLine("Invalid option!"); Pause(); break;
                 }
             }
         }
 
         static void DisplayMenu()
         {
+            Console.Clear();
             Console.WriteLine("====== DORMITORY & CAFETERIA SYSTEM ======");
             Console.WriteLine("1. Register New Student");
             Console.WriteLine("2. View All Students");
@@ -164,15 +50,12 @@ namespace DormitoryAndCafeteriaSystem
             Console.WriteLine("5. View Orders By Dormitory");
             Console.WriteLine("6. View Student Monthly Spending");
             Console.WriteLine("7. Remove Student");
-            Console.WriteLine("8. View dorm rules");
-            Console.WriteLine("9. Apply for dorm");
-            Console.WriteLine("10. Assign room to student");
-            Console.WriteLine("11. Pay monthly fee");
-            Console.WriteLine("12. Reset monthly data");
-            Console.WriteLine("13. Checkout student (show assigned room)");
+            Console.WriteLine("8. View Dorm Rules");
+            Console.WriteLine("9. Apply for Dorm");
+            Console.WriteLine("10. Assign Room to Student");
+            Console.WriteLine("11. Pay Monthly Fee");
             Console.WriteLine("0. Exit");
-
-            Console.WriteLine("==========================================\n");
+            Console.WriteLine("==========================================");
             Console.Write("Enter choice: ");
         }
 
@@ -182,232 +65,217 @@ namespace DormitoryAndCafeteriaSystem
             Console.ReadKey();
         }
 
-        // -------------------- Metodat e case-ave --------------------
-
+        // ================= STUDENT =================
         static void RegisterStudent()
         {
-            int id;
-            while (true)
+            try
             {
                 Console.Write("ID: ");
-                string? input = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(input) && int.TryParse(input, out id)) break;
-                Console.WriteLine("Invalid input!");
-            }
+                int id = int.Parse(Console.ReadLine()!);
 
-            Console.Write("Name: ");
-            string name = Console.ReadLine() ?? string.Empty;
+                Console.Write("First Name: ");
+                string firstName = Console.ReadLine()!;
 
-            Console.Write("Last Name: ");
-            string lastname = Console.ReadLine() ?? string.Empty;
+                Console.Write("Last Name: ");
+                string lastName = Console.ReadLine()!;
 
-            Console.Write("Email: ");
-            string email = Console.ReadLine() ?? string.Empty;
+                Console.Write("Email: ");
+                string email = Console.ReadLine()!;
 
-            Console.Write("Phone: ");
-            string phone = Console.ReadLine() ?? string.Empty;
+                Console.Write("Phone: ");
+                string phone = Console.ReadLine()!;
 
-            Console.Write("Dormitory ID (optional): ");
-            string dormInput = Console.ReadLine();
-            int? dormId = null;
-            if (!string.IsNullOrWhiteSpace(dormInput) && int.TryParse(dormInput, out int did))
-                dormId = did;
+                Console.Write("Dormitory ID (optional): ");
+                string dormInput = Console.ReadLine()!;
+                int? dormId = string.IsNullOrWhiteSpace(dormInput) ? null : int.Parse(dormInput);
 
-            try
-            {
-                using var conn = new NpgsqlConnection("Host=localhost;Port=5432;Database=DormitoryAndCafeteriaSystemDB;Username=postgres;Password=2206;");
-                conn.Open();
-
-                using var cmd = new NpgsqlCommand(
-                    "INSERT INTO Student (StudentID, FirstName, LastName, Email, Phone, DormitoryID) " +
-                    "VALUES (@id, @fname, @lname, @email, @phone, @dorm);", conn);
-
-                cmd.Parameters.AddWithValue("id", id);
-                cmd.Parameters.AddWithValue("fname", name);
-                cmd.Parameters.AddWithValue("lname", lastname);
-                cmd.Parameters.AddWithValue("email", email);
-                cmd.Parameters.AddWithValue("phone", phone);
-                if (dormId.HasValue) cmd.Parameters.AddWithValue("dorm", dormId.Value);
-                else cmd.Parameters.AddWithValue("dorm", DBNull.Value);
-
-                cmd.ExecuteNonQuery();
-                // Shto studentin edhe në listën në memorje
-                var student = new Student(id, name, lastname, dormId.HasValue ? dormId.Value.ToString() : "");
-                students.Add(student);
-
-
-                Console.WriteLine("Student registered successfully in database!");
-
-                
-               
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Gabim gjatë regjistrimit: {ex.Message}");
-            }
-
-            Pause();
-        }
-
-        
-
-        static void ViewAllStudents()
-        {
-            try
-            {
-                using var conn = new NpgsqlConnection("Host=localhost;Port=5432;Database=DormitoryAndCafeteriaSystemDB;Username=postgres;Password=2206;");
-                conn.Open();
-
-                using var cmd = new NpgsqlCommand("SELECT s.StudentID, s.FirstName, s.LastName, d.Name AS DormName " +
-                                                  "FROM Student s LEFT JOIN Dormitory d ON s.DormitoryID = d.DormitoryID " +
-                                                  "ORDER BY s.StudentID;", conn);
-
-                using var reader = cmd.ExecuteReader();
-                Console.WriteLine("\nAll Students:");
-                while (reader.Read())
+                var student = new Student(id, firstName, lastName, dormId)
                 {
-                    Console.WriteLine($"{reader["StudentID"]} | {reader["FirstName"]} {reader["LastName"]} | Dormitory: {reader["DormName"]}");
-                }
+                    Email = email,
+                    Phone = phone
+                };
+
+                studentService.RegisterStudent(student);
+                Pause();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Gabim gjatë leximit të studentëve: {ex.Message}");
-            }
-
-            Pause();
-        }
-
-        static void ViewOrdersByDormitory() //case 5
-        {
-            Console.Write("Dormitory: ");
-            string dorm = Console.ReadLine() ?? "";
-            cafeteria.ViewOrdersByDormitory(students, dorm);
-            Pause();
-        }
-
-        static void ViewStudentMonthlyCost()
-        {
-            int id;
-            while (true)
-            {
-                Console.Write("Student ID: ");
-                string? input = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(input) && int.TryParse(input, out id)) break;
-                Console.WriteLine("Invalid input!");
-            }
-
-            var student = students.Find(s => s.Id == id);
-            if (student == null)
-            {
-                Console.WriteLine("Student not found.");
+                Console.WriteLine("Error registering student:");
+                Console.WriteLine(ex.Message);
                 Pause();
-                return;
             }
-
-            Console.WriteLine($"{student.Name} | Dormitory: {student.Dormitory} | Monthly Fee: {student.CalculateMonthlyCost()}€");
-            Console.WriteLine($"Total Spent in Cafeteria: {cafeteria.TotalSpentByStudent(id)}€");
-            Pause();
         }
 
         static void RemoveStudent()
         {
-            int id;
-            while (true)
+            try
             {
-                Console.Write("Student ID to remove: ");
-                string? input = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(input) && int.TryParse(input, out id)) break;
-                Console.WriteLine("Invalid input!");
+                Console.Write("Enter Student ID to remove: ");
+                int id = int.Parse(Console.ReadLine()!);
+                studentService.RemoveStudent(id);
+                Pause();
             }
-
-            students.RemoveAll(s => s.Id == id);
-            cafeteria.RemoveOrdersByStudent(id);
-
-            if (File.Exists($"student_{id}.json")) File.Delete($"student_{id}.json");
-
-            Console.WriteLine("Student and related orders removed.");
-            Pause();
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error removing student:");
+                Console.WriteLine(ex.Message);
+                Pause();
+            }
         }
 
-        //static void LoadAllStudents()
-        //{
-        //    foreach (var file in Directory.GetFiles(".", "student_*.json"))
-        //    {
-        //        Student? s = Student.LoadFromFile(file);
-        //        if (s != null) students.Add(s);
-        //    }
-        //}
-
-        //static void SaveAllData()
-        //{
-        //    foreach (var s in students) s.SaveToFile($"student_{s.Id}.json");
-        //    cafeteria.SaveAllOrders();
-        //    foreach (var room in rooms)
-        //    {
-        //        room.Save($"room_{room.RoomNumber}.json");
-        //    }
-
-        //}
-
-        static void InitializeRooms()
+        static void ApplyForDorm()
         {
-            rooms.Clear();
-
-            // 1️⃣ Provo me i ngarku dhomat nga JSON
-            foreach (var file in Directory.GetFiles(".", "room_*.json"))
+            try
             {
-                try
+                Console.Write("Enter Student ID: ");
+                int id = int.Parse(Console.ReadLine()!);
+
+                var student = studentService.GetStudentById(id);
+                if (student == null)
                 {
-                    rooms.Add(Room.Load(file));
+                    Console.WriteLine("Student not found.");
+                    Pause();
+                    return;
                 }
-                catch
-                {
-                    Console.WriteLine($"Failed to load {file}");
-                }
+
+                Console.Write("Enter Dormitory ID: ");
+                int dormId = int.Parse(Console.ReadLine()!);
+
+                studentService.ApplyForDorm(student, dormId);
+                Pause();
             }
-
-            // 2️⃣ Nese nuk ka asnje room.json, krijo dhoma te reja
-            if (rooms.Count == 0)
+            catch (Exception ex)
             {
-                for (int i = 1; i <= 10; i++)
-                {
-                    rooms.Add(new Room(i, 2));
-                }
+                Console.WriteLine("Error applying for dorm:");
+                Console.WriteLine(ex.Message);
+                Pause();
             }
         }
 
-        static Student? SelectStudent()
+        static void AssignRoom()
         {
-            Console.Write("Enter student ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
-                return null;
-
-            return students.FirstOrDefault(s => s.Id == id);
-        }
-        static void LoadAllStudentsFromDb()
-        {
-            students.Clear();
-            using var conn = new Npgsql.NpgsqlConnection(
-                "Host=localhost;Port=5432;Database=DormitoryAndCafeteriaSystemDB;Username=postgres;Password=2206;");
-            conn.Open();
-
-            using var cmd = new Npgsql.NpgsqlCommand(
-                "SELECT StudentID, FirstName, LastName, DormitoryID FROM Student ORDER BY StudentID;", conn);
-
-            using var reader = cmd.ExecuteReader();
-            while (reader.Read())
+            try
             {
-                int id = reader.GetInt32(0);
-                string name = reader.GetString(1);
-                string lastName = reader.GetString(2);
-                string dormitory = reader.IsDBNull(3) ? "" : reader.GetString(3);
+                Console.Write("Enter Student ID: ");
+                int id = int.Parse(Console.ReadLine()!);
 
-                var student = new Student(id, name, lastName, dormitory);
-                students.Add(student);
+                var student = studentService.GetStudentById(id);
+                if (student == null)
+                {
+                    Console.WriteLine("Student not found.");
+                    Pause();
+                    return;
+                }
+
+                roomService.AssignRoomToStudent(student);
+                Pause();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error assigning room:");
+                Console.WriteLine(ex.Message);
+                Pause();
             }
         }
 
+        static void PayMonthlyFee()
+        {
+            try
+            {
+                Console.Write("Enter Student ID: ");
+                int id = int.Parse(Console.ReadLine()!);
 
+                var student = studentService.GetStudentById(id);
+                if (student == null)
+                {
+                    Console.WriteLine("Student not found.");
+                    Pause();
+                    return;
+                }
 
+                studentService.PayMonthlyFee(student);
+                Pause();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error paying monthly fee:");
+                Console.WriteLine(ex.Message);
+                Pause();
+            }
+        }
+
+        static void ViewStudentMonthlyCost()
+        {
+            try
+            {
+                Console.Write("Enter Student ID: ");
+                int id = int.Parse(Console.ReadLine()!);
+
+                var student = studentService.GetStudentById(id);
+                if (student == null)
+                {
+                    Console.WriteLine("Student not found.");
+                    Pause();
+                    return;
+                }
+
+                decimal total = cafeteriaService.TotalSpentByStudent(student.Id) + roomService.MonthlyFee(student);
+                Console.WriteLine($"Student: {student.Name} {student.LastName}");
+                Console.WriteLine($"Total Monthly Spending: {total}€");
+                Pause();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error calculating monthly cost:");
+                Console.WriteLine(ex.Message);
+                Pause();
+            }
+        }
+
+        // ================= CAFETERIA =================
+        static void PlaceCafeteriaOrder()
+        {
+            try
+            {
+                Console.Write("Enter Student ID: ");
+                int id = int.Parse(Console.ReadLine()!);
+
+                var student = studentService.GetStudentById(id);
+                if (student == null)
+                {
+                    Console.WriteLine("Student not found.");
+                    Pause();
+                    return;
+                }
+
+                cafeteriaService.PlaceOrder(student);
+                Pause();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error placing order:");
+                Console.WriteLine(ex.Message);
+                Pause();
+            }
+        }
+
+        static void ViewOrdersByDormitory()
+        {
+            try
+            {
+                Console.Write("Enter Dormitory name/code: ");
+                string dorm = Console.ReadLine() ?? "";
+
+                cafeteriaService.ViewOrdersByDormitory(studentService.Students, dorm);
+                Pause();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error viewing orders by dormitory:");
+                Console.WriteLine(ex.Message);
+                Pause();
+            }
+        }
     }
 }
+

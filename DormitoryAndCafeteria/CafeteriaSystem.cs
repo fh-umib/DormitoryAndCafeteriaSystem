@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using Npgsql;
 using DormitoryAndCafeteriaSystem.Data;
+using DormitoryAndCafeteriaSystem.Entities;
 
 namespace DormitoryAndCafeteriaSystem
 {
     public class CafeteriaSystem
     {
-        // PLACE ORDER
+        // ------------------ PLACE ORDER ------------------
         public void PlaceOrder(List<Student> students)
         {
-            Console.Write("Student ID: ");
-            if (!int.TryParse(Console.ReadLine(), out int id))
+            Console.Write("Enter Student ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int studentId))
             {
-                Console.WriteLine("Invalid ID!");
+                Console.WriteLine("Invalid student ID!");
                 Pause();
                 return;
             }
 
-            var student = students.FirstOrDefault(s => s.Id == id);
+            var student = students.FirstOrDefault(s => s.Id == studentId);
             if (student == null)
             {
                 Console.WriteLine("Student not found!");
@@ -28,7 +29,7 @@ namespace DormitoryAndCafeteriaSystem
             }
 
             Console.Write("Product: ");
-            string product = Console.ReadLine() ?? "";
+            string product = Console.ReadLine() ?? string.Empty;
 
             Console.Write("Price: ");
             if (!decimal.TryParse(Console.ReadLine(), out decimal price))
@@ -39,36 +40,31 @@ namespace DormitoryAndCafeteriaSystem
             }
 
             // Kontrolli i limitit 150€
-            decimal currentDebt = GetCurrentCafeteriaDebt(student.Id);
+            decimal currentDebt = GetCurrentCafeteriaDebt(studentId);
             if (currentDebt + price > 150)
             {
-                Console.WriteLine("Nuk lejohet: e ke kalu limitin mujor 150€.");
-                Console.WriteLine("Duhet me pagu CASH.");
+                Console.WriteLine("Nuk lejohet: e ke kaluar limitin mujor 150€.");
+                Console.WriteLine("Pagesa duhet me u bo CASH.");
                 Pause();
                 return;
             }
 
             try
             {
-                
-
                 using var conn = DbConnectionFactory.Create();
                 conn.Open();
 
                 using var cmd = new NpgsqlCommand(
-    @"INSERT INTO CafeteriaOrderNew (studentid, product, price) 
-      VALUES (@studentId, @product, @price);", conn);
+                    @"INSERT INTO CafeteriaOrderNew (StudentID, Product, Price, Status)
+                      VALUES (@studentId, @product, @price, 'PLACED');", conn);
 
-                cmd.Parameters.AddWithValue("studentId", student.Id);
+                cmd.Parameters.AddWithValue("studentId", studentId);
                 cmd.Parameters.AddWithValue("product", product);
                 cmd.Parameters.AddWithValue("price", price);
 
                 cmd.ExecuteNonQuery();
 
-
-                
-
-                Console.WriteLine("Order placed successfully in the database!");
+                Console.WriteLine("Order placed successfully!");
             }
             catch (Exception ex)
             {
@@ -78,7 +74,7 @@ namespace DormitoryAndCafeteriaSystem
             Pause();
         }
 
-        // GET CURRENT DEBT
+        // ------------------ GET CURRENT DEBT ------------------
         private decimal GetCurrentCafeteriaDebt(int studentId)
         {
             try
@@ -87,8 +83,10 @@ namespace DormitoryAndCafeteriaSystem
                 conn.Open();
 
                 using var cmd = new NpgsqlCommand(
-                    @"SELECT COALESCE(SUM(Price),0) FROM CafeteriaOrder
-                      WHERE StudentID = @studentId AND Status='PLACED';", conn);
+                    @"SELECT COALESCE(SUM(Price), 0)
+                      FROM CafeteriaOrderNew
+                      WHERE StudentID = @studentId
+                        AND Status = 'PLACED';", conn);
 
                 cmd.Parameters.AddWithValue("studentId", studentId);
                 return Convert.ToDecimal(cmd.ExecuteScalar());
@@ -108,16 +106,30 @@ namespace DormitoryAndCafeteriaSystem
                 conn.Open();
 
                 using var cmd = new NpgsqlCommand(
-                    @"SELECT o.OrderID, o.StudentID, s.FirstName, s.LastName, o.Product, o.Price, o.OrderDate, o.Status
-                      FROM CafeteriaOrder o
-                      JOIN Student s ON o.StudentID = s.StudentID
+                    @"SELECT o.OrderID,
+                             o.StudentID,
+                             s.FirstName,
+                             s.LastName,
+                             o.Product,
+                             o.Price,
+                             o.OrderDate,
+                             o.Status
+                      FROM CafeteriaOrderNew o
+                      JOIN Student s ON s.StudentID = o.StudentID
                       ORDER BY o.OrderDate;", conn);
 
                 using var reader = cmd.ExecuteReader();
                 Console.WriteLine("\nAll Cafeteria Orders:");
+
                 while (reader.Read())
                 {
-                    Console.WriteLine($"OrderID: {reader["OrderID"]}, Student: {reader["FirstName"]} {reader["LastName"]}, Product: {reader["Product"]}, Price: {reader["Price"]}€, Date: {reader["OrderDate"]}, Status: {reader["Status"]}");
+                    Console.WriteLine(
+                        $"OrderID: {reader["OrderID"]}, " +
+                        $"Student: {reader["FirstName"]} {reader["LastName"]}, " +
+                        $"Product: {reader["Product"]}, " +
+                        $"Price: {reader["Price"]}€, " +
+                        $"Date: {reader["OrderDate"]}, " +
+                        $"Status: {reader["Status"]}");
                 }
             }
             catch (Exception ex)
@@ -128,17 +140,17 @@ namespace DormitoryAndCafeteriaSystem
             Pause();
         }
 
-        // ------------------ VIEW ORDERS BY DORM ------------------
-        public void ViewOrdersByDormitory(List<Student> students, string dorm)
+        // ------------------ VIEW ORDERS BY DORMITORY ------------------
+        public void ViewOrdersByDormitory(List<Student> students, int dormId)
         {
-            var dormIds = students
-                .Where(s => s.Dormitory.Equals(dorm, StringComparison.OrdinalIgnoreCase))
+            var studentIds = students
+                .Where(s => s.DormitoryId.HasValue && s.DormitoryId.Value == dormId)
                 .Select(s => s.Id)
-                .ToList();
+                .ToArray();
 
-            if (dormIds.Count == 0)
+            if (studentIds.Length == 0)
             {
-                Console.WriteLine("No students found for this dorm.");
+                Console.WriteLine("No students found for this dormitory.");
                 Pause();
                 return;
             }
@@ -149,21 +161,35 @@ namespace DormitoryAndCafeteriaSystem
                 conn.Open();
 
                 using var cmd = new NpgsqlCommand(
-                    @"SELECT o.OrderID, o.StudentID, s.FirstName, s.LastName, o.Product, o.Price, o.OrderDate, o.Status
-                      FROM CafeteriaOrder o
-                      JOIN Student s ON o.StudentID = s.StudentID
+                    @"SELECT o.OrderID,
+                             o.StudentID,
+                             s.FirstName,
+                             s.LastName,
+                             o.Product,
+                             o.Price,
+                             o.OrderDate,
+                             o.Status
+                      FROM CafeteriaOrderNew o
+                      JOIN Student s ON s.StudentID = o.StudentID
                       WHERE o.StudentID = ANY(@studentIds)
                       ORDER BY o.OrderDate;", conn);
 
-                cmd.Parameters.AddWithValue("studentIds", dormIds.ToArray());
-                using var reader = cmd.ExecuteReader();
+                cmd.Parameters.AddWithValue("studentIds", studentIds);
 
-                Console.WriteLine($"\nOrders for dormitory: {dorm}");
+                using var reader = cmd.ExecuteReader();
+                Console.WriteLine($"\nOrders for Dormitory ID: {dormId}");
+
                 bool found = false;
                 while (reader.Read())
                 {
                     found = true;
-                    Console.WriteLine($"OrderID: {reader["OrderID"]}, Student: {reader["FirstName"]} {reader["LastName"]}, Product: {reader["Product"]}, Price: {reader["Price"]}€, Date: {reader["OrderDate"]}, Status: {reader["Status"]}");
+                    Console.WriteLine(
+                        $"OrderID: {reader["OrderID"]}, " +
+                        $"Student: {reader["FirstName"]} {reader["LastName"]}, " +
+                        $"Product: {reader["Product"]}, " +
+                        $"Price: {reader["Price"]}€, " +
+                        $"Date: {reader["OrderDate"]}, " +
+                        $"Status: {reader["Status"]}");
                 }
 
                 if (!found)
@@ -180,22 +206,7 @@ namespace DormitoryAndCafeteriaSystem
         // ------------------ TOTAL SPENT BY STUDENT ------------------
         public decimal TotalSpentByStudent(int studentId)
         {
-            try
-            {
-                using var conn = DbConnectionFactory.Create();
-                conn.Open();
-
-                using var cmd = new NpgsqlCommand(
-                    @"SELECT COALESCE(SUM(Price),0) FROM CafeteriaOrder
-                      WHERE StudentID = @studentId AND Status='PLACED';", conn);
-
-                cmd.Parameters.AddWithValue("studentId", studentId);
-                return Convert.ToDecimal(cmd.ExecuteScalar());
-            }
-            catch
-            {
-                return 0m;
-            }
+            return GetCurrentCafeteriaDebt(studentId);
         }
 
         // ------------------ REMOVE ORDERS BY STUDENT ------------------
@@ -207,15 +218,20 @@ namespace DormitoryAndCafeteriaSystem
                 conn.Open();
 
                 using var cmd = new NpgsqlCommand(
-                    @"DELETE FROM CafeteriaOrder WHERE StudentID = @studentId;", conn);
+                    @"DELETE FROM CafeteriaOrderNew
+                      WHERE StudentID = @studentId;", conn);
 
                 cmd.Parameters.AddWithValue("studentId", studentId);
                 cmd.ExecuteNonQuery();
+
+                Console.WriteLine("Orders removed successfully.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error removing orders: {ex.Message}");
             }
+
+            Pause();
         }
 
         // ------------------ PAUSE ------------------

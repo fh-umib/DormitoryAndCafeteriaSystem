@@ -1,18 +1,44 @@
-using DormitoryAndCafeteriaSystem.Repositories;
+using System;
+using System.Collections.Generic;
+using DormitoryAndCafeteriaSystem.Entities;
 
 namespace DormitoryAndCafeteriaSystem.Services
 {
     public class RoomService
     {
-        private readonly RoomRepository _repo = new();
+        private readonly List<Student> assignedStudents = new();
 
-        public void PrintRooms()
+        public void LoadAllRooms()
         {
-            var rooms = _repo.GetAll();
-            foreach (var r in rooms)
+            // Safe placeholder
+        }
+
+        public void ShowDormRules()
+        {
+            Console.WriteLine("=== RULES OF THE BOARDING HOUSE ===");
+            Console.WriteLine("1. Curfew: 23:00");
+            Console.WriteLine("2. Smoking is prohibited in the rooms");
+            Console.WriteLine("3. Visitors only until 21:00");
+            Console.WriteLine("4. Monthly payment is mandatory");
+            Console.WriteLine("5. Damage to property is punishable");
+
+        }
+
+        public void AssignRoomToStudent(Student student)
+        {
+            if (assignedStudents.Contains(student))
             {
-                System.Console.WriteLine($"Room {r.RoomNumber} | Capacity: {r.Capacity}");
+                Console.WriteLine("Student already has a room.");
+                return;
             }
+
+            assignedStudents.Add(student);
+            Console.WriteLine($"Room assigned to {student.Name}.");
+        }
+
+        public decimal MonthlyFee(Student student)
+        {
+            return 100m;
         }
     }
 }

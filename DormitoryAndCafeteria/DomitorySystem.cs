@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DormitoryAndCafeteriaSystem.Entities;
 
 namespace DormitoryAndCafeteriaSystem
 {
@@ -7,6 +8,7 @@ namespace DormitoryAndCafeteriaSystem
     {
         public void RegisterStudent(List<Student> students)
         {
+            // ---------------- ID ----------------
             int id;
             while (true)
             {
@@ -18,16 +20,27 @@ namespace DormitoryAndCafeteriaSystem
                 Console.WriteLine("Invalid ID. Try again.");
             }
 
-            Console.Write("Name: ");
+            // ---------------- Name ----------------
+            Console.Write("First Name: ");
             string name = Console.ReadLine() ?? string.Empty;
 
-            Console.Write("Dormitory: ");
-            string dormitory = Console.ReadLine() ?? string.Empty;
-
             Console.Write("Last Name: ");
-            string lastname = Console.ReadLine() ?? string.Empty;
+            string lastName = Console.ReadLine() ?? string.Empty;
 
-            students.Add(new Student(id, name, lastname, dormitory));
+            // ---------------- Dormitory ID (nullable int) ----------------
+            int? dormId = null;
+            Console.Write("Dormitory ID (optional): ");
+            string? dormInput = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(dormInput))
+            {
+                if (int.TryParse(dormInput, out int parsedDorm))
+                    dormId = parsedDorm;
+                else
+                    Console.WriteLine("Invalid Dormitory ID. Will be left empty.");
+            }
+
+            // ---------------- Add Student ----------------
+            students.Add(new Student(id, name, lastName, dormId));
             Console.WriteLine("Student registered successfully.");
         }
 
@@ -40,7 +53,10 @@ namespace DormitoryAndCafeteriaSystem
             }
 
             foreach (var s in students)
-                Console.WriteLine(s);
+            {
+                string dormDisplay = s.DormitoryId.HasValue ? s.DormitoryId.Value.ToString() : "None";
+                Console.WriteLine($"ID: {s.Id}, Name: {s.Name} {s.LastName}, Dormitory ID: {dormDisplay}");
+            }
         }
 
         public void PlaceOrder(List<Student> students, List<CafeteriaOrder> orders)
