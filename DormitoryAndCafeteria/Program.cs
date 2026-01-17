@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Npgsql;
 
 
 namespace DormitoryAndCafeteriaSystem
@@ -11,39 +12,42 @@ namespace DormitoryAndCafeteriaSystem
     // pa permbajtur logjike biznesi.
     class Program
     {
-
-        // Lista statike qe mban te gjithe studentet e regjistruar gjate ekzekutimit te programit.
-        // Perdoret si memorie qendrore (RAM) dhe sinkronizohet me JSON per ruajtje te përhershme.
+        
         static List<Student> students = new();
-        // Objekt statik i sistemit te menses.
-        // Menaxhon porosite, shpenzimet mujore dhe raportet e studenteve.
         static CafeteriaSystem cafeteria = new();
-        // Objekt statik qe permban rregullat e konviktit.
-        // Shfaq rregullat per studentet kur kerkohet nga menuja.
         static DormitoryRules rules = new();
-        // Objekt statik qe menaxhon aplikimet e studenteve per konvikt.
-        // Kontrollon nese studenti ka aplikuar dhe ruan gjendjen e aplikimit.
         static DormitoryApplication application = new();
-        // Objekt statik pergjegjes per caktimin dhe lirimin e dhomave te konviktit.
-        // Punon me listen e dhomave dhe statusin e studenteve.
         static AccomodationAssignment assignment = new();
-        // Objekt statik per menaxhimin e pagesave mujore te studenteve.
-        // Kontrollon nese pagesa eshte kryer dhe perditeson statusin perkates.
         static Payment payment = new();
-        // Lista statike qe permban te gjitha dhomat e konviktit.
-        // Çdo dhome eshte objekt i klases Room dhe ruhet/ngarkohet nga JSON.
         static List<Room> rooms = new List<Room>();
         
         
 
         static void Main()
         {
+            
+                Console.OutputEncoding = Encoding.UTF8;
+                Console.InputEncoding = Encoding.UTF8;
+
+            
+
+            // Testo lidhjen me databazën para se të hapet menuja
+            Services.DatabaseTester.TestDatabase();
+
+                InitializeRooms();
+
+            
+
+            //LoadAllStudents();
+
+            DisplayMenu();
+
             // Set console encoding to UTF-8 to support special characters 
             Console.OutputEncoding = Encoding.UTF8;
             Console.InputEncoding = Encoding.UTF8;
 
             InitializeRooms();
-            LoadAllStudents();
+            //LoadAllStudents();
 
             while (true)
             {
@@ -60,6 +64,7 @@ namespace DormitoryAndCafeteriaSystem
                     case "2": // View All Students
                         ViewAllStudents();
                         break;
+
 
                     case "3": // Place Cafeteria Order
                         cafeteria.PlaceOrder(students);
@@ -137,7 +142,7 @@ namespace DormitoryAndCafeteriaSystem
                             break;
                         }
                     case "0": // Exit
-                        SaveAllData();
+                        //SaveAllData();
                         Console.WriteLine("Exiting... Goodbye!");
                         return;
 
@@ -196,29 +201,79 @@ namespace DormitoryAndCafeteriaSystem
             Console.Write("Last Name: ");
             string lastname = Console.ReadLine() ?? string.Empty;
 
-            Console.Write("University: ");
-            string university = Console.ReadLine() ?? string.Empty;
+            Console.Write("Email: ");
+            string email = Console.ReadLine() ?? string.Empty;
 
-            Console.WriteLine("Student registered successfully.");
+            Console.Write("Phone: ");
+            string phone = Console.ReadLine() ?? string.Empty;
 
-            var student = new Student(id, name, lastname, university);
-            students.Add(student);
-            student.SaveToFile($"student_{id}.json");
+            Console.Write("Dormitory ID (optional): ");
+            string dormInput = Console.ReadLine();
+            int? dormId = null;
+            if (!string.IsNullOrWhiteSpace(dormInput) && int.TryParse(dormInput, out int did))
+                dormId = did;
+
+            try
+            {
+                using var conn = new NpgsqlConnection("Host=localhost;Port=5432;Database=DormitoryAndCafeteriaSystemDB;Username=postgres;Password=2206;");
+                conn.Open();
+
+                using var cmd = new NpgsqlCommand(
+                    "INSERT INTO Student (StudentID, FirstName, LastName, Email, Phone, DormitoryID) " +
+                    "VALUES (@id, @fname, @lname, @email, @phone, @dorm);", conn);
+
+                cmd.Parameters.AddWithValue("id", id);
+                cmd.Parameters.AddWithValue("fname", name);
+                cmd.Parameters.AddWithValue("lname", lastname);
+                cmd.Parameters.AddWithValue("email", email);
+                cmd.Parameters.AddWithValue("phone", phone);
+                if (dormId.HasValue) cmd.Parameters.AddWithValue("dorm", dormId.Value);
+                else cmd.Parameters.AddWithValue("dorm", DBNull.Value);
+
+                cmd.ExecuteNonQuery();
+                // Shto studentin edhe në listën në memorje
+                var student = new Student(id, name, lastname, dormId.HasValue ? dormId.Value.ToString() : "");
+                students.Add(student);
+
+
+                Console.WriteLine("Student registered successfully in database!");
+
+                
+               
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Gabim gjatë regjistrimit: {ex.Message}");
+            }
+
             Pause();
         }
 
+        
+
         static void ViewAllStudents()
         {
-            if (students.Count == 0)
-                Console.WriteLine("No students found.");
-            else
+            try
             {
+                using var conn = new NpgsqlConnection("Host=localhost;Port=5432;Database=DormitoryAndCafeteriaSystemDB;Username=postgres;Password=2206;");
+                conn.Open();
+
+                using var cmd = new NpgsqlCommand("SELECT s.StudentID, s.FirstName, s.LastName, d.Name AS DormName " +
+                                                  "FROM Student s LEFT JOIN Dormitory d ON s.DormitoryID = d.DormitoryID " +
+                                                  "ORDER BY s.StudentID;", conn);
+
+                using var reader = cmd.ExecuteReader();
                 Console.WriteLine("\nAll Students:");
-                foreach (var student in students)
+                while (reader.Read())
                 {
-                    Console.WriteLine(student); // Student ToString() tregon ID, Name, Dormitory
+                    Console.WriteLine($"{reader["StudentID"]} | {reader["FirstName"]} {reader["LastName"]} | Dormitory: {reader["DormName"]}");
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Gabim gjatë leximit të studentëve: {ex.Message}");
+            }
+
             Pause();
         }
 
@@ -274,25 +329,25 @@ namespace DormitoryAndCafeteriaSystem
             Pause();
         }
 
-        static void LoadAllStudents()
-        {
-            foreach (var file in Directory.GetFiles(".", "student_*.json"))
-            {
-                Student? s = Student.LoadFromFile(file);
-                if (s != null) students.Add(s);
-            }
-        }
+        //static void LoadAllStudents()
+        //{
+        //    foreach (var file in Directory.GetFiles(".", "student_*.json"))
+        //    {
+        //        Student? s = Student.LoadFromFile(file);
+        //        if (s != null) students.Add(s);
+        //    }
+        //}
 
-        static void SaveAllData()
-        {
-            foreach (var s in students) s.SaveToFile($"student_{s.Id}.json");
-            cafeteria.SaveAllOrders();
-            foreach (var room in rooms)
-            {
-                room.Save($"room_{room.RoomNumber}.json");
-            }
+        //static void SaveAllData()
+        //{
+        //    foreach (var s in students) s.SaveToFile($"student_{s.Id}.json");
+        //    cafeteria.SaveAllOrders();
+        //    foreach (var room in rooms)
+        //    {
+        //        room.Save($"room_{room.RoomNumber}.json");
+        //    }
 
-        }
+        //}
 
         static void InitializeRooms()
         {
@@ -329,7 +384,28 @@ namespace DormitoryAndCafeteriaSystem
 
             return students.FirstOrDefault(s => s.Id == id);
         }
+        static void LoadAllStudentsFromDb()
+        {
+            students.Clear();
+            using var conn = new Npgsql.NpgsqlConnection(
+                "Host=localhost;Port=5432;Database=DormitoryAndCafeteriaSystemDB;Username=postgres;Password=2206;");
+            conn.Open();
 
+            using var cmd = new Npgsql.NpgsqlCommand(
+                "SELECT StudentID, FirstName, LastName, DormitoryID FROM Student ORDER BY StudentID;", conn);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                int id = reader.GetInt32(0);
+                string name = reader.GetString(1);
+                string lastName = reader.GetString(2);
+                string dormitory = reader.IsDBNull(3) ? "" : reader.GetString(3);
+
+                var student = new Student(id, name, lastName, dormitory);
+                students.Add(student);
+            }
+        }
 
 
 

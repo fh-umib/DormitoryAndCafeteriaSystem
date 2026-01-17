@@ -14,6 +14,7 @@ namespace DormitoryAndCafeteriaSystem
         public decimal MonthlyLimit { get; set; } = 150;
         public decimal CurrentCafeteriaDebt { get; set; } = 0;
         public int? AssignedRoomNumber { get; set; } = null;
+        public int? DormitoryID { get; set; }
 
         public bool CanOrder(decimal price)
         {
