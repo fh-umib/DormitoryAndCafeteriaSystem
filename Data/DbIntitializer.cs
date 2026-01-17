@@ -1,8 +1,13 @@
 ﻿using System;
 
-public class Class1
+namespace DormitoryAndCafeteriaSystem.Data
 {
-	public Class1()
-	{
-	}
+    public static class DbInitializer
+    {
+        public static void Init()
+        {
+            Console.WriteLine("Database initialized (manual scripts used).");
+        }
+    }
 }
+

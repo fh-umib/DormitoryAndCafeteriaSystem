@@ -29,12 +29,12 @@ namespace DormitoryAndCafeteriaSystem
                 Console.OutputEncoding = Encoding.UTF8;
                 Console.InputEncoding = Encoding.UTF8;
 
-            
+
 
             // Testo lidhjen me databazën para se të hapet menuja
-            Services.DatabaseTester.TestDatabase();
+            DormitoryAndCafeteriaSystem.Data.DatabaseTester.TestDatabase();
 
-                InitializeRooms();
+            InitializeRooms();
 
             
 

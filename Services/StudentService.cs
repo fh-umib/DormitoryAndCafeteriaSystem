@@ -1,5 +1,4 @@
-﻿using DormitoryAndCafeteriaSystem.Entities;
-using DormitoryAndCafeteriaSystem.Repositories;
+﻿using DormitoryAndCafeteriaSystem.Repositories;
 
 namespace DormitoryAndCafeteriaSystem.Services
 {
@@ -7,19 +6,13 @@ namespace DormitoryAndCafeteriaSystem.Services
     {
         private readonly StudentRepository _repo = new();
 
-        public void Save(Student student)
+        public void PrintAllStudents()
         {
-            var entity = new StudentEntity
+            var students = _repo.GetAll();
+            foreach (var s in students)
             {
-                StudentID = student.Id,
-                FirstName = student.Name,
-                LastName = student.LastName,
-                DormitoryID = student.DormitoryID.Value
-                // përdor DormitoryID ekzistues
-            };
-
-
-            _repo.Insert(entity);
+                System.Console.WriteLine($"{s.StudentID} | {s.FirstName} {s.LastName}");
+            }
         }
     }
 }

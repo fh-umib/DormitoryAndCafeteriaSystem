@@ -1,4 +1,5 @@
-﻿using DormitoryAndCafeteriaSystem.Entities;
+﻿using System.Collections.Generic;
+using DormitoryAndCafeteriaSystem.Entities;
 
 namespace DormitoryAndCafeteriaSystem.Repositories.Interfaces
 {
@@ -7,6 +8,5 @@ namespace DormitoryAndCafeteriaSystem.Repositories.Interfaces
         List<StudentEntity> GetAll();
         StudentEntity? GetById(int id);
         void Add(StudentEntity student);
-        void Delete(int id);
     }
 }

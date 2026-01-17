@@ -1,6 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using DormitoryAndCafeteriaSystem.Entities;
 
-public class IRoomRepository
+namespace DormitoryAndCafeteriaSystem.Repositories.Interfaces
 {
-	
+    public interface IRoomRepository
+    {
+        List<RoomEntity> GetAll();
+    }
 }
