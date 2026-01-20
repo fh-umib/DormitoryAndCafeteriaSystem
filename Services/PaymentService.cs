@@ -8,7 +8,7 @@ namespace DormitoryAndCafeteriaSystem.Services
     {
         private readonly string connectionString = "Host=localhost;Port=5432;Database=DormitoryAndCafeteriaSystemDB;Username=postgres;Password=2206;";
 
-        // 🟢 Paguaj pagesën mujore për një student
+        //Paguaj pagesen mujore per nje student
         public void PayMonthlyFee(Student student, decimal amount)
         {
             if (student == null)
@@ -22,7 +22,7 @@ namespace DormitoryAndCafeteriaSystem.Services
                 using var conn = new NpgsqlConnection(connectionString);
                 conn.Open();
 
-                // 1️⃣ Shto pagesën në tabelën e pagesave (nëse ke një tabelë për pagesa)
+                //Shto pagesen ne tabelen e pagesave (nese ke nje tabele per pagesa)
                 using (var cmdInsert = new NpgsqlCommand(
                     "INSERT INTO MonthlyPayments (StudentID, Amount, PaymentDate) VALUES (@id, @amount, CURRENT_DATE);", conn))
                 {
@@ -31,7 +31,7 @@ namespace DormitoryAndCafeteriaSystem.Services
                     cmdInsert.ExecuteNonQuery();
                 }
 
-                // 2️⃣ Update totalin mujore të studentit në tabelën Student (opsional)
+                //Update totalin mujore te studentit ne tabelen Student (opsional)
                 using (var cmdUpdate = new NpgsqlCommand(
                     "UPDATE Student SET MonthlyFeePaid = COALESCE(MonthlyFeePaid,0) + @amount WHERE StudentID = @id;", conn))
                 {
@@ -48,7 +48,7 @@ namespace DormitoryAndCafeteriaSystem.Services
             }
         }
 
-        // 🟢 Reset pagesat mujore (p.sh. fillimi i muajit të ri)
+      // Reset pagesat mujore (p.sh. fillimi i muajit te ri)
         public void ResetMonthlyPayments()
         {
             try
@@ -67,7 +67,7 @@ namespace DormitoryAndCafeteriaSystem.Services
             }
         }
 
-        // 🟢 Shiko pagesat mujore të një student
+        // Shiko pagesat mujore te nje student
         public decimal GetMonthlyPaid(Student student)
         {
             if (student == null) return 0m;

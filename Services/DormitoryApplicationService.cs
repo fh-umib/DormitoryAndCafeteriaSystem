@@ -9,10 +9,10 @@ namespace DormitoryAndCafeteriaSystem.Services
     public class DormitoryApplicationService
     {
         /// <summary>
-        /// Aplikon një student për një konvikt të caktuar.
-        /// Ruhet edhe në memory (objekti Student) edhe në databazë.
+        /// Aplikon nje student per nje konvikt te caktuar.
+        /// Ruhet edhe ne memory (objekti Student) edhe ne databaze.
         /// </summary>
-        /// <param name="student">Objekti student në memory</param>
+        /// <param name="student">Objekti student ne memory</param>
         /// <param name="dormId">ID e konviktit ku student aplikon</param>
         public void Apply(Student student, int dormId)
         {
@@ -22,7 +22,7 @@ namespace DormitoryAndCafeteriaSystem.Services
                 return;
             }
 
-            // Ruaj në objektin në memory
+            // Ruaj ne objektin ne memory
             student.AppliedDormitory = dormId.ToString();
 
             // ------------------ SQL QUERY ------------------
@@ -36,7 +36,7 @@ namespace DormitoryAndCafeteriaSystem.Services
                     "UPDATE Student SET AppliedDormitory = @dorm WHERE StudentID = @id;", conn);
 
                 cmd.Parameters.AddWithValue("id", student.Id);
-                cmd.Parameters.AddWithValue("dorm", dormId); // tipi int në DB
+                cmd.Parameters.AddWithValue("dorm", dormId); // tipi int ne DB
 
                 int rowsAffected = cmd.ExecuteNonQuery();
                 if (rowsAffected > 0)

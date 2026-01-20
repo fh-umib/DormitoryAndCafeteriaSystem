@@ -15,7 +15,7 @@ namespace DormitoryAndCafeteriaSystem
     {
         public void AssignRoom(Student student, List<Room> rooms)
         {
-            //  NËSE STUDENTI KA DHOMË
+            //  NESE STUDENTI KA DHOME
             if (student.AssignedRoomNumber != null)
             {
                 Console.WriteLine(

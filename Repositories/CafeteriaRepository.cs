@@ -24,7 +24,7 @@ namespace DormitoryAndCafeteriaSystem.Repositories
                 {
                     OrderID = reader.GetInt32(0),
                     StudentID = reader.GetInt32(1),
-                    // Shiko nëse ke CafeteriaID në tabelën tende. Nëse jo, hiqe ose zevendeso.
+                    // Shiko nese ke CafeteriaID ne tabelen tende. Nese jo, hiqe ose zevendeso.
                     CafeteriaID = reader.IsDBNull(2) ? 0 : reader.GetInt32(2),
                     OrderDate = reader.GetDateTime(3),
                     TotalAmount = reader.GetDecimal(4),

@@ -26,15 +26,5 @@ namespace DormitoryAndCafeteriaSystem
             return $"{Date:dd.MM.yyyy HH:mm} | {Product} | {Price}€ | StudentID: {StudentId}";
         }
 
-        //public void SaveToFile(string fileName)
-        //{
-        //    var options = new JsonSerializerOptions { WriteIndented = true };
-        //    File.WriteAllText(fileName, JsonSerializer.Serialize(this, options));
-        //}
-
-        //public static CafeteriaOrder LoadFromFile(string fileName)
-        //{
-        //    return JsonSerializer.Deserialize<CafeteriaOrder>(File.ReadAllText(fileName))!;
-        //}
     }
 }

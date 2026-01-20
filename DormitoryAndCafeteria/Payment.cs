@@ -1,6 +1,6 @@
 ﻿
 using System;
-using DormitoryAndCafeteriaSystem.Entities; // <--- kjo mungonte
+using DormitoryAndCafeteriaSystem.Entities; 
 namespace DormitoryAndCafeteriaSystem
 {
     class Payment

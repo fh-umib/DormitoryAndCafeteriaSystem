@@ -9,7 +9,7 @@ namespace DormitoryAndCafeteriaSystem.Data
         {
             try
             {
-                // Këtu përdorim DbConnectionFactory
+                // Ketu perdorim DbConnectionFactory
                 using var conn = DbConnectionFactory.Create();
                 conn.Open();
                 Console.WriteLine("Database connection successful!");
