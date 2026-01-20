@@ -150,7 +150,6 @@ We focused on delivering a stable, understandable, and well-documented solution 
 ## Final Statement
 
 AI was used responsibly as a **learning assistant**, not as a solution generator. Every decision in this project was made consciously, with full understanding of the implemented logic.
-
 This document ensures full transparency and compliance with the AI Usage Policy and can be safely included in the project repository.
 
 ---
