@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DormitoryAndCafeteriaSystem.Entities;
 using DormitoryAndCafeteriaSystem.Services;
 
@@ -26,7 +27,7 @@ namespace DormitoryAndCafeteriaSystem
                     case "2": studentService.ViewAllStudents(); Pause(); break;
                     case "3": PlaceCafeteriaOrder(); break;
                     case "4": cafeteriaService.ViewAllOrders(); Pause(); break;
-                    case "5": ViewOrdersByDormitory(); break;
+                    case "5": ViewStudentsByDormitory(); break;
                     case "6": ViewStudentMonthlyCost(); break;
                     case "7": RemoveStudent(); break;
                     case "8": roomService.ShowDormRules(); Pause(); break;
@@ -47,7 +48,7 @@ namespace DormitoryAndCafeteriaSystem
             Console.WriteLine("2. View All Students");
             Console.WriteLine("3. Place Cafeteria Order");
             Console.WriteLine("4. View All Orders");
-            Console.WriteLine("5. View Orders By Dormitory");
+            Console.WriteLine("5. View Students By Dormitory");
             Console.WriteLine("6. View Student Monthly Spending");
             Console.WriteLine("7. Remove Student");
             Console.WriteLine("8. View Dorm Rules");
@@ -85,11 +86,7 @@ namespace DormitoryAndCafeteriaSystem
                 Console.Write("Phone: ");
                 string phone = Console.ReadLine()!;
 
-                Console.Write("Dormitory ID (optional): ");
-                string dormInput = Console.ReadLine()!;
-                int? dormId = string.IsNullOrWhiteSpace(dormInput) ? null : int.Parse(dormInput);
-
-                var student = new Student(id, firstName, lastName, dormId)
+                var student = new Student(id, firstName, lastName)
                 {
                     Email = email,
                     Phone = phone
@@ -138,7 +135,7 @@ namespace DormitoryAndCafeteriaSystem
                     return;
                 }
 
-                Console.Write("Enter Dormitory ID: ");
+                Console.Write("Enter Dormitory ID to apply: ");
                 int dormId = int.Parse(Console.ReadLine()!);
 
                 studentService.ApplyForDorm(student, dormId);
@@ -219,7 +216,7 @@ namespace DormitoryAndCafeteriaSystem
                     return;
                 }
 
-                decimal total = cafeteriaService.TotalSpentByStudent(student.Id) + roomService.MonthlyFee(student);
+                decimal total = studentService.CalculateMonthlyCost(student, roomService.MonthlyFee(student), cafeteriaService.TotalSpentByStudent(student.Id));
                 Console.WriteLine($"Student: {student.Name} {student.LastName}");
                 Console.WriteLine($"Total Monthly Spending: {total}€");
                 Pause();
@@ -259,23 +256,35 @@ namespace DormitoryAndCafeteriaSystem
             }
         }
 
-        static void ViewOrdersByDormitory()
+        // ================= VIEW STUDENTS BY DORM =================
+        static void ViewStudentsByDormitory()
         {
             try
             {
-                Console.Write("Enter Dormitory name/code: ");
-                string dorm = Console.ReadLine() ?? "";
+                Console.Write("Enter Dormitory ID: ");
+                int dormId = int.Parse(Console.ReadLine()!);
 
-                cafeteriaService.ViewOrdersByDormitory(studentService.Students, dorm);
+                var students = studentService.GetStudentsByDormitory(dormId);
+                if (students.Count == 0)
+                {
+                    Console.WriteLine("No students have applied for this dormitory.");
+                    Pause();
+                    return;
+                }
+
+                foreach (var student in students)
+                {
+                    Console.WriteLine($"Student: {student.Name} {student.LastName}, Room: {(student.AssignedRoomNumber?.ToString() ?? "N/A")}, Paid: {student.HasPaid}, Applied Dorm ID: {student.AppliedDormitoryId}");
+                }
+
                 Pause();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error viewing orders by dormitory:");
+                Console.WriteLine("Error viewing students by dormitory:");
                 Console.WriteLine(ex.Message);
                 Pause();
             }
         }
     }
 }
-

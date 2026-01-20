@@ -1,8 +1,6 @@
-﻿
-using Npgsql;
+﻿using Npgsql;
 using System;
-using DormitoryAndCafeteriaSystem.Entities; 
-
+using DormitoryAndCafeteriaSystem.Entities;
 
 namespace DormitoryAndCafeteriaSystem.Services
 {
@@ -23,7 +21,7 @@ namespace DormitoryAndCafeteriaSystem.Services
             }
 
             // Ruaj ne objektin ne memory
-            student.AppliedDormitory = dormId.ToString();
+            student.AppliedDormitoryId = dormId;
 
             // ------------------ SQL QUERY ------------------
             try

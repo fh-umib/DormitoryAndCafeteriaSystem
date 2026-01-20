@@ -7,12 +7,16 @@ namespace DormitoryAndCafeteriaSystem
     {
         public void Apply(Student student)
         {
-            Console.Write("Enter the dormitory you want to apply for: ");
-            string dorm = Console.ReadLine() ?? "";
+            Console.Write("Enter the dormitory you want to apply for (ID): ");
+            int dormId;
+            while (!int.TryParse(Console.ReadLine(), out dormId))
+            {
+                Console.Write("Please enter a valid dormitory ID: ");
+            }
 
-            student.AppliedDormitory = dorm;
+            student.AppliedDormitoryId = dormId;
 
-            Console.WriteLine($"The dormitory application was accepted for {student.Name} to {dorm}");
+            Console.WriteLine($"The dormitory application was accepted for {student.Name} to dorm {dormId}");
         }
     }
 }

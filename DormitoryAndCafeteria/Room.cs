@@ -1,8 +1,8 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 using System.IO;
-using System;
 
-namespace DormitoryAndCafeteriaSystem
+namespace DormitoryAndCafeteriaSystem.Entities
 {
     public class Room
     {
@@ -17,33 +17,24 @@ namespace DormitoryAndCafeteriaSystem
             Occupied = 0;
         }
 
-        public bool IsAvailable()
-        {
-            return Occupied < Capacity;
-        }
+        public bool IsAvailable() => Occupied < Capacity;
 
         public void AssignStudent()
         {
             if (IsAvailable())
-            {
                 Occupied++;
-            }
             else
-            {
-                Console.WriteLine("Room is full!");
-                //Shtoje qe nese eshte full te aplikon per nje dhome tjeter 
-            }
+                Console.WriteLine("Room is full! Choose another room.");
         }
-       
-public void Save(string file)
-    {
-        File.WriteAllText(file, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
-    }
 
-    public static Room Load(string file)
-    {
-        return JsonSerializer.Deserialize<Room>(File.ReadAllText(file))!;
-    }
+        public void Save(string file)
+        {
+            File.WriteAllText(file, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
+        }
 
-}
+        public static Room Load(string file)
+        {
+            return JsonSerializer.Deserialize<Room>(File.ReadAllText(file))!;
+        }
+    }
 }

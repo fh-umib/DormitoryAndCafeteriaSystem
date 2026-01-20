@@ -8,11 +8,6 @@ namespace DormitoryAndCafeteriaSystem.Services
     {
         private readonly List<Student> assignedStudents = new();
 
-        public void LoadAllRooms()
-        {
-            // Safe placeholder
-        }
-
         public void ShowDormRules()
         {
             Console.WriteLine("=== RULES OF THE BOARDING HOUSE ===");
@@ -21,7 +16,6 @@ namespace DormitoryAndCafeteriaSystem.Services
             Console.WriteLine("3. Visitors only until 21:00");
             Console.WriteLine("4. Monthly payment is mandatory");
             Console.WriteLine("5. Damage to property is punishable");
-
         }
 
         public void AssignRoomToStudent(Student student)
@@ -32,13 +26,12 @@ namespace DormitoryAndCafeteriaSystem.Services
                 return;
             }
 
+            // Zgjidh dhomen e lirë manualisht ose automatikisht
             assignedStudents.Add(student);
-            Console.WriteLine($"Room assigned to {student.Name}.");
+            student.AssignedRoomNumber = new Random().Next(1, 50); // Për shembull dhoma e rastësishme
+            Console.WriteLine($"Room {student.AssignedRoomNumber} assigned to {student.Name}.");
         }
 
-        public decimal MonthlyFee(Student student)
-        {
-            return 100m;
-        }
+        public decimal MonthlyFee(Student student) => 100m;
     }
 }

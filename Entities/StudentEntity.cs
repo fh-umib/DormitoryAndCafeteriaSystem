@@ -1,25 +1,25 @@
-﻿using System;
-
-namespace DormitoryAndCafeteriaSystem.Entities
+﻿namespace DormitoryAndCafeteriaSystem.Entities
 {
     public class Student
     {
-        // ---------------- BASIC INFO ----------------
+        // Identiteti
         public int Id { get; set; }
-        public string Name { get; set; } = "";
-        public string LastName { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string Phone { get; set; } = "";
+        public string Name { get; set; }
+        public string LastName { get; set; }
 
-        // ---------------- DORMITORY & ROOM ----------------
-        public int? DormitoryId { get; set; }
-        public int? AssignedRoomNumber { get; set; }
+        // Informacion për konvikt dhe dhomë
+        public int? DormitoryId { get; set; }           // Dormitory ku studenti është assignuar
+        public int? AppliedDormitoryId { get; set; }    // Dormitory ku studenti ka aplikuar
+        public int? AssignedRoomNumber { get; set; }   // Numri i dhomës ku është assignuar
+
+        // Të dhëna shtesë
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+
+        // Pagesa
         public bool HasPaid { get; set; } = false;
 
-        // ---------------- APPLICATION ----------------
-        public string? AppliedDormitory { get; set; }  // kjo e rregullon gabimin
-
-        // ---------------- CONSTRUCTOR ----------------
+        // Constructor
         public Student(int id, string name, string lastName, int? dormitoryId = null)
         {
             Id = id;
@@ -28,17 +28,10 @@ namespace DormitoryAndCafeteriaSystem.Entities
             DormitoryId = dormitoryId;
         }
 
-        public Student() { }
-
-        // ---------------- BUSINESS LOGIC ----------------
-        public decimal CalculateMonthlyCost()
+        // Llogarit shpenzimin mujor (p.sh. dorm + kafeteri)
+        public decimal CalculateMonthlyCost(decimal roomFee = 100m, decimal cafeteriaCost = 0m)
         {
-            return 100m;
-        }
-
-        public override string ToString()
-        {
-            return $"{Id} | {Name} {LastName} | DormitoryID: {(DormitoryId?.ToString() ?? "N/A")} | Room: {(AssignedRoomNumber?.ToString() ?? "N/A")}";
+            return roomFee + cafeteriaCost;
         }
     }
 }
