@@ -67,7 +67,7 @@ Follow prompts to:
 ---
 
 ## Screenshots
-
+//Rregulloje folderin qe e ke thirr te qikjo sc...
 ### 1. Dormitory Menu
 
 ![Dormitory Menu](screenshots/dormitory_menu.png)
