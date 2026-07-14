@@ -1,102 +1,258 @@
 # Dormitory and Cafeteria Management System
 
-**Authors:** Flutura and Tringa Hyseni
-**Technologies:** C# Console Application, SQL (PostgreSQL)
+A console-based management system developed in C# and integrated with a PostgreSQL database for managing university dormitory applications, cafeteria orders, payments, and reports.
+
+The project demonstrates database integration, layered application design, input validation, error handling, and collaborative software development.
+
+---
+
+## Authors
+
+**Flutura Hyseni**  
+**Tringa Hyseni**
+
+---
+
+## Technologies Used
+
+- C#
+- .NET
+- PostgreSQL
+- SQL
+- Npgsql
+- Git
+- GitHub
+- Visual Studio
 
 ---
 
 ## Project Overview
 
-This project is a **console-based management system** for a dormitory and cafeteria.
-It consists of two integrated parts:
+The system consists of two integrated components:
 
-1. **C# Console Application** – handles student interactions, dormitory applications, cafeteria orders, and reporting.
-2. **SQL Database** – stores all persistent data including students, dormitory applications, cafeteria orders, and payments.
+1. **C# Console Application**  
+   Handles user interaction, dormitory applications, cafeteria orders, payments, validation, and reporting.
 
-The project demonstrates **database interaction, modular application design, and collaborative development**.
+2. **PostgreSQL Database**  
+   Stores and manages persistent data related to students, dormitories, rooms, applications, cafeteria products, orders, and payments.
 
----
-
-## Features
-
-* Apply for dormitories and manage applications
-* Place cafeteria orders and calculate total prices
-* View student and order reports
-* Fully integrated C# application with SQL backend
-* Proper error handling and validation
-* Collaborative development with reflection on AI usage
+The application follows a layered structure to separate data access, business logic, domain entities, and user interaction.
 
 ---
 
-## Installation
+## Main Features
 
-1. Clone the repository:
+### Dormitory Management
+
+- Manage student information
+- Submit dormitory applications
+- Manage dormitory and room information
+- Process room-related operations
+- View dormitory application records
+
+### Cafeteria Management
+
+- Manage cafeteria products
+- Create cafeteria orders
+- Calculate order totals
+- Store and retrieve order information
+- View cafeteria reports
+
+### Data Management
+
+- PostgreSQL database integration
+- Persistent data storage
+- Repository-based data access
+- Input validation
+- Error handling
+- SQL-based reporting
+
+---
+
+## Application Architecture
+
+The project is organized using a layered architecture:
+
+- **Entities** — Contains the main domain models
+- **Repositories** — Handles database access and data operations
+- **Services** — Contains application and business logic
+- **Data** — Manages database configuration and connections
+- **DormitoryAndCafeteria** — Contains the console application flow and user interaction
+- **Documentation** — Contains project-related documentation
+
+---
+
+## Project Structure
+
+```text
+DormitoryAndCafeteriaSystem/
+│
+├── Data/
+│   └── Database connection and configuration
+│
+├── Documentation/
+│   └── Project documentation
+│
+├── DormitoryAndCafeteria/
+│   └── Console application and user interaction
+│
+├── Entities/
+│   └── Domain models and system entities
+│
+├── Repositories/
+│   └── Database access and data operations
+│
+├── Services/
+│   └── Business logic and application services
+│
+├── DormitoryAndCafeteriaSystem1.csproj
+├── .gitattributes
+├── .gitignore
+└── README.md
+```
+
+---
+
+## Installation and Setup
+
+### Prerequisites
+
+Before running the application, make sure that the following tools are installed:
+
+- .NET SDK
+- PostgreSQL
+- Visual Studio, Visual Studio Code, or another compatible IDE
+- Git
+
+### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/fh-umib/DormitoryAndCafeteriaSystem.git]
+git clone https://github.com/fh-umib/DormitoryAndCafeteriaSystem.git
 ```
 
-2. Open the C# solution in **Visual Studio** or your preferred IDE.
+### 2. Open the Project
 
-3. Configure the SQL database connection string in `DbConnectionFactory.cs`:
+Open the project in Visual Studio or another compatible development environment.
+
+### 3. Configure the Database Connection
+
+Update the PostgreSQL connection configuration in `DbConnectionFactory.cs`.
+
+Use your own local database credentials:
 
 ```csharp
-Host=localhost;Port=5432;Database=DormitoryAndCafeteriaSystemDB;Username=postgres;Password=2206;
+Host=localhost;
+Port=5432;
+Database=DormitoryAndCafeteriaSystemDB;
+Username=postgres;
+Password=YOUR_PASSWORD;
 ```
 
-4. Execute the SQL script `database_setup.sql` to create all tables.
+> Do not publish real database passwords or other sensitive credentials in the repository.
 
-5. Build and run the application.
+### 4. Prepare the Database
 
----
+Create the required PostgreSQL database and execute the SQL scripts associated with the project.
 
-## Usage
+### 5. Build the Project
 
-Run the application via console:
+```bash
+dotnet build
+```
+
+### 6. Run the Application
 
 ```bash
 dotnet run
 ```
 
-Follow prompts to:
+---
 
-* Apply for dormitory
-* Place cafeteria orders
-* View reports
+## Usage
+
+After running the application, follow the console menu options to perform operations such as:
+
+- Submit a dormitory application
+- Manage dormitory-related information
+- Place cafeteria orders
+- Calculate order totals
+- View stored records
+- Generate reports
 
 ---
 
-## Screenshots
-//Rregulloje folderin qe e ke thirr te qikjo sc...
-### 1. Dormitory Menu
+## Validation and Error Handling
 
-![Dormitory Menu](screenshots/dormitory_menu.png)
+The application includes validation and error handling for:
 
-### 2. Dormitory Application Submission
-
-![Dormitory Submission](screenshots/dormitory_submission.png)
-
-### 3. Cafeteria Order Placement
-
-![Cafeteria Order](screenshots/cafeteria_order.png)
-
-### 4. Error Handling Example
-
-![Error Handling](screenshots/error_handling.png)
+- Invalid menu selections
+- Incorrect user input
+- Missing or invalid information
+- Database-related errors
+- Invalid dormitory operations
+- Invalid cafeteria order operations
 
 ---
 
-## Collaborative & AI Notes
+## Collaborative Development
 
-* This project was developed **jointly by Flutura and Tringe**.
-* AI was used responsibly for guidance, explanation, and debugging advice. **No code was copied directly.**
-* Full reflection and AI usage documentation is provided in [`Reflection Paper.md`] 
+This project was developed collaboratively by **Flutura Hyseni** and **Tringa Hyseni**.
+
+The development process included:
+
+- Collaborative planning
+- Database design
+- C# application development
+- Testing and debugging
+- Documentation
+- Git and GitHub version control
+
+AI tools were used as learning and development support for explanations, debugging guidance, and code review.
+
+---
+
+## Learning Outcomes
+
+Through this project, we strengthened our knowledge and practical skills in:
+
+- Object-oriented programming with C#
+- PostgreSQL database integration
+- SQL development
+- Layered software architecture
+- Repository and service patterns
+- Database connection management
+- Input validation
+- Error handling
+- Collaborative software development
+- Git and GitHub version control
+- Technical documentation
 
 ---
 
 ## Future Improvements
 
-* Implement a GUI for better user interaction
-* Add more validation and automated testing
-* Integrate advanced reporting features
-* Consider multiple users access and authentication
+Future improvements may include:
+
+- Graphical user interface
+- Web-based application
+- User authentication and authorization
+- Role-based access control
+- Automated testing
+- Advanced reporting and analytics
+- Improved database configuration security
+- Multi-user support
+- Administrative dashboard
+
+---
+
+## Authors
+
+**Flutura Hyseni**  
+Computer Science & Engineering Student  
+University of Mitrovica "Isa Boletini" — UMIB
+
+[GitHub Profile](https://github.com/fh-umib)  
+[LinkedIn Profile](https://www.linkedin.com/in/flutura-hyseni-9558823b0)
+
+**Tringa Hyseni**  
+Computer Science & Engineering Student
